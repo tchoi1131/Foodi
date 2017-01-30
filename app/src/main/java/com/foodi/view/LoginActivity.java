@@ -1,8 +1,10 @@
-package com.foodi.login;
+package com.foodi.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -42,11 +44,11 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-    /**
-     * Tag for debug
-     */
+public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,
+        View.OnClickListener{
+    //Tag for debug
     private static final String TAG = "LoginActivity";
+    public static final String emailStr = "eAddress";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -76,20 +78,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView = (EditText) findViewById(R.id.password);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loginButtonListener();
-            }
-        });
+        mEmailSignInButton.setOnClickListener(this);
 
         Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
-        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerButtonListener();
-            }
-        });
+        mEmailRegisterButton.setOnClickListener(this);
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -98,25 +90,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mAuth = FirebaseAuth.getInstance();
 
         //Setup Authentication Listener
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
+        //mAuthListener = new FoodiAuthStateListener(this);
+    }
+/*
+    private class FoodiAuthStateListener implements FirebaseAuth.AuthStateListener {
+        private AppCompatActivity loginActivity = null;
+
+        FoodiAuthStateListener(AppCompatActivity aParent){
+            loginActivity = aParent;
+        }
+
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Intent intent = new Intent(loginActivity, MainMenuActivity.class);
+                intent.putExtra(emailStr,mEmailView.getText());
+                startActivity(intent);
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+            } else {
+                // User is signed out
+                Intent intent = new Intent(loginActivity, LoginActivity.class);
+                intent.putExtra(emailStr,mEmailView.getText());
+                startActivity(intent);
+                Log.d(TAG, "onAuthStateChanged:signed_out");
             }
-        };
+        }
+    }*/
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.email_register_button) {
+            registerButtonListener();
+        } else if (i == R.id.email_sign_in_button) {
+            loginButtonListener();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        //mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -170,32 +186,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (task.isSuccessful()){
-                            Log.w(TAG, "signInWithEmail:success", task.getException());
-                            Toast.makeText(LoginActivity.this, R.string.login_success,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(LoginActivity.this, R.string.login_failed,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END sign_in_with_email]
+                .addOnCompleteListener(this, new SignInOnCompleteListener(this));
     }
 
-    private void signOut() {
-        mAuth.signOut();
+    private class SignInOnCompleteListener implements OnCompleteListener<AuthResult>{
+        private AppCompatActivity loginActivity = null;
+
+        SignInOnCompleteListener(AppCompatActivity aParent){
+            loginActivity = aParent;
+        }
+
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+            // If sign in fails, display a message to the user. If sign in succeeds
+            // the auth state listener will be notified and logic to handle the
+            // signed in user can be handled in the listener.
+            if (task.isSuccessful()) {
+                Log.w(TAG, "signInWithEmail:success", task.getException());
+
+                Toast.makeText(LoginActivity.this, R.string.login_success,
+                        Toast.LENGTH_SHORT).show();
+
+                //Intent intent = new Intent(loginActivity, MainMenuActivity.class);
+                //intent.putExtra(emailStr,mEmailView.getText());
+                //startActivity(intent);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(emailStr,mEmailView.getText());
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            } else {
+                Log.w(TAG, "signInWithEmail:failed", task.getException());
+                Toast.makeText(LoginActivity.this, R.string.login_failed,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+            // [END_EXCLUDE]
     }
 
     private void populateAutoComplete() {
