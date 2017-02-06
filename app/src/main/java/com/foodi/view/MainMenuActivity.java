@@ -1,11 +1,11 @@
 package com.foodi.view;
 
-import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,11 +23,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainMenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        ManageDeliveryRequestsFragment.OnFragmentInteractionListener,
+        MaintainDeliveryRequestFragment.OnFragmentInteractionListener,
+        ListOrdersFragment.OnFragmentInteractionListener {
     //Tag for debug
     private static final String TAG = "MainMenuActivity";
-
-    private static final int LOGIN_ACTIVITY_REQUEST_CODE = 1;
 
     /**
      * Use Firebase Authentication
@@ -37,6 +38,8 @@ public class MainMenuActivity extends AppCompatActivity
 
     // UI references.
     private TextView mEAddressTextView;
+
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +62,26 @@ public class MainMenuActivity extends AppCompatActivity
 
         //get firebase authentication
         mAuth = FirebaseAuth.getInstance();
+        userId = mAuth.getCurrentUser().getUid();
 
         //Setup Authentication Listener
-        mAuthListener = new FoodiAuthStateListener(this);
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    mEAddressTextView.setText(user.getEmail());
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Intent intentLoginActivity = new Intent(MainMenuActivity.this, LoginActivity.class);
+                    startActivity(intentLoginActivity);
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    finish();
+                }
+            }
+        };
     }
 
     private void signOut() {
@@ -120,13 +140,17 @@ public class MainMenuActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_customer_order) {
-            // Handle the camera action
-        } else if (id == R.id.nav_customer_manage_orders) {
+        if (id == R.id.nav_manage_delivery_requests) {
+            // Handle the customer order action
+            Fragment fragment = ManageDeliveryRequestsFragment.newInstance(userId);
+            //Fragment fragment = ListOrdersFragment.newInstance(ListOrdersFragment.NEW_DEL_REQ_MODE, mAuth.getCurrentUser().getUid());
 
-        } else if (id == R.id.nav_driver_discover_orders) {
-
-        } else if (id == R.id.nav_restaurant_manage_orders) {
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, fragment)
+                    .commit();
+        } else if (id == R.id.nav_manage_delivery_offers) {
 
         } else if (id == R.id.nav_email_sign_out) {
             signOut();
@@ -138,40 +162,26 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case LOGIN_ACTIVITY_REQUEST_CODE : {
-                if (resultCode == Activity.RESULT_OK) {
-                    String eAddress = data.getStringExtra(LoginActivity.emailStr);
-                    // Update your email Address.
-                    //mEAddressTextView.setText(eAddress);
-                }
-                break;
-            }
-        }
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
-    private class FoodiAuthStateListener implements FirebaseAuth.AuthStateListener {
-        private AppCompatActivity mainMenuActivity = null;
+    @Override
+    public void onCreateDelReqFragmentInteraction() {
+        // Handle the customer order action
+        Fragment fragment = MaintainDeliveryRequestFragment.newInstance(userId,MaintainDeliveryRequestFragment.NEW_DEL_REQ_MODE);
 
-        FoodiAuthStateListener(AppCompatActivity aParent){
-            mainMenuActivity = aParent;
-        }
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_main_menu, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
 
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                // User is signed in
-                mEAddressTextView.setText(user.getEmail());
-                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-            } else {
-                // User is signed out
-                Intent intentLoginActivity = new Intent(mainMenuActivity, LoginActivity.class);
-                startActivityForResult(intentLoginActivity, LOGIN_ACTIVITY_REQUEST_CODE);
-                Log.d(TAG, "onAuthStateChanged:signed_out");
-            }
-        }
+    @Override
+    public void onFinishCreatingRequest() {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.popBackStack();
     }
 }

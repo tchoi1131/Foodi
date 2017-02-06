@@ -25,14 +25,29 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="nav_customer_order">Order</string>
-    <string name="nav_customer_manage_orders">Manage Orders</string>
-    <string name="nav_driver_discover_orders">Check Orders</string>
+    <string name="nav_manage_delivery_requests">Manage Delivery Requests</string>
+    <string name="nav_manage_delivery_offers">Check Orders</string>
     <string name="nav_restaurant_manage_orders">Manage Orders</string>
     <string name="nav_email_sign_out">Sign out</string>
 
+    <string name="nav_customer_manage_orders">Manage Orders</string>
+
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="customer_order_fragment">Customer Order</string>
+    <string name="list_orders_fragment">Orders</string>
+    <string name="delivery_request_fragment">Delivery Request</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="create_delivery_request">Create Delivery Request</string>
+    <string name="order_number">Order Number</string>
+    <string name="restaurant">Restaruant</string>
+    <string name="date_time">Date Time</string>
+
+    <string name="restaurant_name">Restaurant Name</string>
+    <string name="restaurant_address">Restaurant Address</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="offer_price">Offer Price</string>
+
 </resources>

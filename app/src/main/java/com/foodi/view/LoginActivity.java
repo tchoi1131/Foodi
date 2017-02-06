@@ -30,13 +30,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.foodi.foodi.R;
+import com.foodi.model.SysConfig;
+import com.foodi.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -48,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View.OnClickListener{
     //Tag for debug
     private static final String TAG = "LoginActivity";
-    public static final String emailStr = "eAddress";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -59,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Use Firebase Authentication
      */
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -88,36 +92,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         //get firebase authentication
         mAuth = FirebaseAuth.getInstance();
-
-        //Setup Authentication Listener
-        //mAuthListener = new FoodiAuthStateListener(this);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
-/*
-    private class FoodiAuthStateListener implements FirebaseAuth.AuthStateListener {
-        private AppCompatActivity loginActivity = null;
-
-        FoodiAuthStateListener(AppCompatActivity aParent){
-            loginActivity = aParent;
-        }
-
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                // User is signed in
-                Intent intent = new Intent(loginActivity, MainMenuActivity.class);
-                intent.putExtra(emailStr,mEmailView.getText());
-                startActivity(intent);
-                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-            } else {
-                // User is signed out
-                Intent intent = new Intent(loginActivity, LoginActivity.class);
-                intent.putExtra(emailStr,mEmailView.getText());
-                startActivity(intent);
-                Log.d(TAG, "onAuthStateChanged:signed_out");
-            }
-        }
-    }*/
 
     @Override
     public void onClick(View v) {
@@ -126,20 +102,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             registerButtonListener();
         } else if (i == R.id.email_sign_in_button) {
             loginButtonListener();
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        //mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
@@ -171,6 +133,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, R.string.registr_success,
                                     Toast.LENGTH_SHORT).show();
+                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), firebaseUser.getDisplayName(), new ArrayList<Integer>(Arrays.asList(0,1,2)));
+
+                            mDatabase.child(SysConfig.FBDB_USERS).child(user.getUserId()).setValue(user);
+                            Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
+                            startActivity(intentLoginActivity);
+                            finish();
                         }
                         else{
                                 Toast.makeText(LoginActivity.this, R.string.registr_failed,
@@ -186,43 +155,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new SignInOnCompleteListener(this));
-    }
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-    private class SignInOnCompleteListener implements OnCompleteListener<AuthResult>{
-        private AppCompatActivity loginActivity = null;
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (task.isSuccessful()) {
+                            Log.w(TAG, "signInWithEmail:success", task.getException());
 
-        SignInOnCompleteListener(AppCompatActivity aParent){
-            loginActivity = aParent;
-        }
-
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-            // If sign in fails, display a message to the user. If sign in succeeds
-            // the auth state listener will be notified and logic to handle the
-            // signed in user can be handled in the listener.
-            if (task.isSuccessful()) {
-                Log.w(TAG, "signInWithEmail:success", task.getException());
-
-                Toast.makeText(LoginActivity.this, R.string.login_success,
-                        Toast.LENGTH_SHORT).show();
-
-                //Intent intent = new Intent(loginActivity, MainMenuActivity.class);
-                //intent.putExtra(emailStr,mEmailView.getText());
-                //startActivity(intent);
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(emailStr,mEmailView.getText());
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
-            } else {
-                Log.w(TAG, "signInWithEmail:failed", task.getException());
-                Toast.makeText(LoginActivity.this, R.string.login_failed,
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-            // [END_EXCLUDE]
+                            Toast.makeText(LoginActivity.this, R.string.login_success,
+                                    Toast.LENGTH_SHORT).show();
+                            Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
+                            startActivity(intentLoginActivity);
+                            finish();
+                        } else {
+                            Log.w(TAG, "signInWithEmail:failed", task.getException());
+                            Toast.makeText(LoginActivity.this, R.string.login_failed,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void populateAutoComplete() {

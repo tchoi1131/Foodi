@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.foodi.view.DriverViewDeliveryRequestFragment">
+
+    <TableLayout
+        android:id="@+id/headerTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="4">
+            <TextView
+                android:layout_weight="1"
+                android:text="@string/order_number"
+                android:gravity="left"
+                android:padding="3dip" />
+            <TextView
+                android:layout_weight="1"
+                android:text="@string/restaurant"
+                android:gravity="left"
+                android:padding="3dip" />
+            <TextView
+                android:layout_weight="1"
+                android:text="@string/customer_name"
+                android:gravity="left"
+                android:padding="3dip" />
+            <TextView
+                android:layout_weight="1"
+                android:text="@string/offer_price"
+                android:gravity="left"
+                android:padding="3dip" />
+        </TableRow>
+    </TableLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerTable">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </TableLayout>
+    </ScrollView>
+
+</RelativeLayout>

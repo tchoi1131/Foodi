@@ -1,4 +1,4 @@
-package com.foodi.foodi;
+package com.foodi.view;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,16 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.foodi.foodi.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CustomerOrderFragment.OnFragmentInteractionListener} interface
+ * {@link DriverViewDeliveryRequestFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link CustomerOrderFragment#newInstance} factory method to
+ * Use the {@link DriverViewDeliveryRequestFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CustomerOrderFragment extends Fragment {
+public class DriverViewDeliveryRequestFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +30,7 @@ public class CustomerOrderFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public CustomerOrderFragment() {
+    public DriverViewDeliveryRequestFragment() {
         // Required empty public constructor
     }
 
@@ -39,11 +40,11 @@ public class CustomerOrderFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment CustomerOrderFragment.
+     * @return A new instance of fragment DriverViewDeliveryRequestFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CustomerOrderFragment newInstance(String param1, String param2) {
-        CustomerOrderFragment fragment = new CustomerOrderFragment();
+    public static DriverViewDeliveryRequestFragment newInstance(String param1, String param2) {
+        DriverViewDeliveryRequestFragment fragment = new DriverViewDeliveryRequestFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,7 +65,7 @@ public class CustomerOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_customer_order, container, false);
+        return inflater.inflate(R.layout.fragment_driver_view_delivery_request, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

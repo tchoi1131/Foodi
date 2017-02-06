@@ -1,0 +1,171 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.foodi.view.MaintainDeliveryRequestFragment">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableLayout
+            android:id="@+id/tablelayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/order_number"
+                    android:padding="3dip" />
+                <EditText
+                    android:id="@+id/order_number"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/restaurant_name"
+                    android:padding="3dip" />
+                <EditText
+                    android:id="@+id/restaurant_name"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="@string/restaurant_address"
+                    android:padding="3dip" />
+
+                <EditText
+                    android:id="@+id/restaurant_address_line1"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/restaurant_address_line2"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/restaurant_address_line3"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="@string/delivery_address"
+                    android:padding="3dip" />
+
+                <EditText
+                    android:id="@+id/delivery_address_line1"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/delivery_address_line2"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/delivery_address_line3"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:padding="3dip"
+                    android:inputType="textPostalAddress" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
+    <Button
+        android:text="ActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/action_button"
+        android:layout_below="@id/scrollView"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

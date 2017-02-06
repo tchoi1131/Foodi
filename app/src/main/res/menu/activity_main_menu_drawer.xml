@@ -4,30 +4,18 @@
     <item android:title="Customer">
         <menu>
             <item
-                android:id="@+id/nav_customer_order"
-                android:title="@string/nav_customer_order" />
-            <item
-                android:id="@+id/nav_customer_manage_orders"
-                android:title="@string/nav_customer_manage_orders" />
+                android:id="@+id/nav_manage_delivery_requests"
+                android:title="@string/nav_manage_delivery_requests" />
         </menu>
     </item>
 
     <item android:title="Driver">
         <menu>
             <item
-                android:id="@+id/nav_driver_discover_orders"
-                android:title="@string/nav_driver_discover_orders" />
+                android:id="@+id/nav_manage_delivery_offers"
+                android:title="@string/nav_manage_delivery_offers" />
         </menu>
     </item>
-
-    <item android:title="Restaurant">
-        <menu>
-            <item
-                android:id="@+id/nav_restaurant_manage_orders"
-                android:title="@string/nav_restaurant_manage_orders" />
-        </menu>
-    </item>
-
     <item
         android:id="@+id/nav_email_sign_out"
         android:title="@string/nav_email_sign_out" />
