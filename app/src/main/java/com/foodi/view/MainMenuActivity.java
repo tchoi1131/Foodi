@@ -3,7 +3,6 @@ package com.foodi.view;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -19,14 +18,26 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.foodi.foodi.R;
+import com.foodi.model.DeliveryOffer;
+import com.foodi.model.DeliveryRequest;
+import com.foodi.model.SysConfig;
+import com.foodi.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        ManageDeliveryRequestsFragment.OnFragmentInteractionListener,
+        MyDeliveryRequestsFragment.OnFragmentInteractionListener,
         MaintainDeliveryRequestFragment.OnFragmentInteractionListener,
-        ListOrdersFragment.OnFragmentInteractionListener {
+        ViewDeliveryRequestDriverFragment.OnListFragmentInteractionListener,
+        ViewDeliveryOfferFragment.OnListFragmentInteractionListener{
     //Tag for debug
     private static final String TAG = "MainMenuActivity";
 
@@ -35,11 +46,13 @@ public class MainMenuActivity extends AppCompatActivity
      */
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     // UI references.
     private TextView mEAddressTextView;
 
     private String userId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +76,19 @@ public class MainMenuActivity extends AppCompatActivity
         //get firebase authentication
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child(SysConfig.FBDB_USERS).child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //Setup Authentication Listener
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -140,10 +166,18 @@ public class MainMenuActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_manage_delivery_requests) {
+        if (id == R.id.nav_my_delivery_requests) {
             // Handle the customer order action
-            Fragment fragment = ManageDeliveryRequestsFragment.newInstance(userId);
-            //Fragment fragment = ListOrdersFragment.newInstance(ListOrdersFragment.NEW_DEL_REQ_MODE, mAuth.getCurrentUser().getUid());
+            Fragment fragment = MyDeliveryRequestsFragment.newInstance(userId);
+
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, fragment)
+                    .commit();
+        } else if (id == R.id.nav_check_delivery_offers) {
+            // Handle the customer order action
+            Fragment fragment = ViewDeliveryOfferFragment.newInstance(userId,1);
 
             // Insert the fragment by replacing any existing fragment
             FragmentManager fragmentManager = getFragmentManager();
@@ -151,7 +185,14 @@ public class MainMenuActivity extends AppCompatActivity
                     .replace(R.id.content_main_menu, fragment)
                     .commit();
         } else if (id == R.id.nav_manage_delivery_offers) {
+            // Handle the customer order action
+            Fragment fragment = ViewDeliveryRequestDriverFragment.newInstance(userId,1);
 
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, fragment)
+                    .commit();
         } else if (id == R.id.nav_email_sign_out) {
             signOut();
         }
@@ -159,11 +200,6 @@ public class MainMenuActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     @Override
@@ -183,5 +219,18 @@ public class MainMenuActivity extends AppCompatActivity
     public void onFinishCreatingRequest() {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void onViewDeliveryRequestFragmentInteraction(String requestKey, DeliveryRequest item, double offerPrice) {
+        DeliveryOffer deliveryOffer = new DeliveryOffer(item.getOrderNumber(),user.getUserName(),offerPrice, Calendar.getInstance().getTime(), DeliveryOffer.DELIVERY_Offer_STATUS_WAITING_FOR_REPLY);
+        String offerKey = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).push().getKey();
+        mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(offerKey).setValue(deliveryOffer);
+        mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_OFFER).child(requestKey).child(offerKey).setValue("");
+    }
+
+    @Override
+    public void onViewDeliveryOfferFragmentInteraction(String key, DeliveryOffer item, String offerStatus) {
+
     }
 }

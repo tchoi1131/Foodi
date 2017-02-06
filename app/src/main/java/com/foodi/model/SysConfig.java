@@ -12,10 +12,15 @@ public class SysConfig {
     public static final String FBDB_USERS = "Users";
     public static final String FBDB_DELIVERY_REQUESTS = "DeliveryRequests";
     public static final String FBDB_USER_DELIVERY_REQUESTS = "UserDeliveryRequest";
+    public static final String FBDB_DELIVERY_REQUEST_OFFER = "DeliveryRequestOffer";
     public static final String FBDB_DELIVERY_OFFERS = "DeliveryOffers";
 
     private int nextFoodId;
     private int nextOrderId;
+
+    public SysConfig(){
+
+    }
 
     public SysConfig(int nextFoodId, int nextOrderId) {
         this.nextFoodId = nextFoodId;

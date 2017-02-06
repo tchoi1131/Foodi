@@ -7,7 +7,7 @@ package com.foodi.model;
 public class DeliveryRequest {
     public static final String DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS = "AcceptingOffers";
 
-    private String orderId;
+    private String orderNumber;
     private String driverUserId;
     private String restaurantName;
     private String restaurantAddressLine1;
@@ -19,12 +19,16 @@ public class DeliveryRequest {
     private int maxReward;
     private String deliveryRequestStatus;
 
-    public DeliveryRequest(String orderId, String driverUserId, String restaurantName,
+    public DeliveryRequest(){
+
+    }
+
+    public DeliveryRequest(String orderNumber, String driverUserId, String restaurantName,
                            String restaurantAddressLine1, String restaurantAddressLine2,
                            String restaurantAddressLine3, String deliveryAddressLine1,
                            String deliveryAddressLine2, String deliveryAddressLine3,
                            int maxReward, String deliveryRequestStatus) {
-        this.orderId = orderId;
+        this.orderNumber = orderNumber;
         this.driverUserId = driverUserId;
         this.restaurantName = restaurantName;
         this.restaurantAddressLine1 = restaurantAddressLine1;
@@ -45,8 +49,8 @@ public class DeliveryRequest {
         this.driverUserId = driverUserId;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
 

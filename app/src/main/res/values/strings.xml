@@ -25,7 +25,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="nav_manage_delivery_requests">Manage Delivery Requests</string>
+    <string name="nav_my_delivery_requests">My Delivery Requests</string>
+    <string name="nav_check_delivery_offers">Check Delivery Offers</string>
     <string name="nav_manage_delivery_offers">Check Orders</string>
     <string name="nav_restaurant_manage_orders">Manage Orders</string>
     <string name="nav_email_sign_out">Sign out</string>
@@ -49,5 +50,6 @@
     <string name="delivery_address">Delivery Address</string>
     <string name="customer_name">Customer Name</string>
     <string name="offer_price">Offer Price</string>
+    <string name="update_price">Update Price</string>
 
 </resources>

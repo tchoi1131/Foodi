@@ -13,6 +13,10 @@ public class User {
     private ArrayList<Integer> roles;
 
     //constructors
+    public User(){
+
+    }
+
     public User(String userId, String email, String userName, ArrayList<Integer> roles){
         this.userId = userId;
         this.email = email;
