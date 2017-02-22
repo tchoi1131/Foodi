@@ -4,6 +4,7 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_name">Name</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_register">Register</string>
     <string name="action_sign_in_short">Sign in</string>
@@ -27,7 +28,7 @@
 
     <string name="nav_my_delivery_requests">My Delivery Requests</string>
     <string name="nav_check_delivery_offers">Check Delivery Offers</string>
-    <string name="nav_manage_delivery_offers">Check Orders</string>
+    <string name="nav_browse_delivery_request">Browse Delivery Request</string>
     <string name="nav_restaurant_manage_orders">Manage Orders</string>
     <string name="nav_email_sign_out">Sign out</string>
 
@@ -40,7 +41,7 @@
     <string name="delivery_request_fragment">Delivery Request</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="create_delivery_request">Create Delivery Request</string>
+    <string name="create_request">Create Request</string>
     <string name="order_number">Order Number</string>
     <string name="restaurant">Restaruant</string>
     <string name="date_time">Date Time</string>
@@ -51,5 +52,41 @@
     <string name="customer_name">Customer Name</string>
     <string name="offer_price">Offer Price</string>
     <string name="update_price">Update Price</string>
+    <string name="delivery_request_created">Delivery Request Created</string>
+    <string name="acceptOffer">Accept %1$s\'s Offer?</string>
+    <string name="acceptedOffer">Accepted %1$s\'s Offer.</string>
+
+    <string name="city">City</string>
+    <string name="addressLine1">Address Line 1</string>
+    <string name="addressLine2">Address Line 2</string>
+    <string name="addressLine3">Address Line 3</string>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="enter_offer">Enter your offer:</string>
+    <string name="select_time">select time</string>
+
+    <string name="confirm">Confirm</string>
+    <string name="stored_date_format">"yyyy-MM-dd hh:mm aa"</string>
+    <string name="display_short_date_format">"MMM dd"</string>
+    <string name="display_time_format">"hh:mm aa"</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm_offer">Confirm to deliver food from %1$s to %2$s ?\n Reward: $%3$s</string>
+    <string name="confirmed_offer">Confirmed offer</string>
+    <string name="request_date">Request Date</string>
+    <string name="request_status">Request Status</string>
+
+
+    <string name="request_status_changed">Request status changed</string>
+
+    <string name="update_to_delivered">
+        Update the status to \"Delivered\"?\n
+        Request Date: %1$s\n
+        Request Time: %2$s\n
+        Restaurant: %3$s\n
+        Driver: $%4$s\n
+        Reward: $%5$s\n
+    </string>
 
 </resources>

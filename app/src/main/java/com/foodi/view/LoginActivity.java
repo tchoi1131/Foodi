@@ -63,11 +63,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Use Firebase Authentication
      */
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mNameView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -80,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
+        mNameView = (EditText) findViewById(R.id.name);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(this);
@@ -93,6 +96,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         //get firebase authentication
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //Setup Authentication Listener
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Intent intentMainMenuActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
+                    startActivity(intentMainMenuActivity);
+                    finish();
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                }
+            }
+        };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override
@@ -134,7 +166,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Toast.makeText(LoginActivity.this, R.string.registr_success,
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), firebaseUser.getDisplayName(), new ArrayList<Integer>(Arrays.asList(0,1,2)));
+                            User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), mNameView.getText().toString(), new ArrayList<Integer>(Arrays.asList(0,1,2)));
 
                             mDatabase.child(SysConfig.FBDB_USERS).child(user.getUserId()).setValue(user);
                             Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
@@ -168,9 +200,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                             Toast.makeText(LoginActivity.this, R.string.login_success,
                                     Toast.LENGTH_SHORT).show();
+                            /*
                             Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
                             startActivity(intentLoginActivity);
                             finish();
+                            */
                         } else {
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(LoginActivity.this, R.string.login_failed,

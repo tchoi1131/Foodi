@@ -1,7 +1,6 @@
 package com.foodi.view;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.foodi.foodi.R;
 import com.foodi.model.DeliveryRequest;
 import com.foodi.model.SysConfig;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.ParseException;
+import java.util.Calendar;
 
 
 /**
@@ -27,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 public class MaintainDeliveryRequestFragment extends Fragment implements View.OnClickListener{
     public static final String NEW_DEL_REQ_MODE = "NewDelReqMode";
+    public static final String VIEW_DEL_REQ_MODE = "ViewDelReqMode";
 
     public static final String ARG_USERID = "userId";
     private static final String ARG_MODE = "mode";
@@ -39,9 +43,11 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
     private EditText mRestaurantAddressLine1Etxt;
     private EditText mRestaurantAddressLine2Etxt;
     private EditText mRestaurantAddressLine3Etxt;
+    private EditText mRestaurantAddressCityEtxt;
     private EditText mDeliveryAddressLine1Etxt;
     private EditText mDeliveryAddressLine2Etxt;
     private EditText mDeliveryAddressLine3Etxt;
+    private EditText mDeliveryAddressCityEtxt;
 
     private DatabaseReference mDatabase;
 
@@ -67,12 +73,22 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         return fragment;
     }
 
+    public static MaintainDeliveryRequestFragment newInstance(String userId, String mode, DeliveryRequest deliveryRequest) {
+        MaintainDeliveryRequestFragment fragment = new MaintainDeliveryRequestFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_USERID, userId);
+        args.putString(ARG_MODE, mode);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mUserId = getArguments().getString(ARG_USERID);
             mMode = getArguments().getString(ARG_MODE);
+
         }
     }
 
@@ -87,25 +103,23 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         mRestaurantAddressLine1Etxt = (EditText) view.findViewById(R.id.restaurant_address_line1);
         mRestaurantAddressLine2Etxt = (EditText) view.findViewById(R.id.restaurant_address_line2);
         mRestaurantAddressLine3Etxt = (EditText) view.findViewById(R.id.restaurant_address_line3);
+        mRestaurantAddressCityEtxt = (EditText) view.findViewById(R.id.restaurant_address_city);
         mDeliveryAddressLine1Etxt = (EditText) view.findViewById(R.id.delivery_address_line1);
         mDeliveryAddressLine2Etxt = (EditText) view.findViewById(R.id.delivery_address_line2);
         mDeliveryAddressLine3Etxt = (EditText) view.findViewById(R.id.delivery_address_line3);
+        mDeliveryAddressCityEtxt = (EditText) view.findViewById(R.id.delivery_address_city);
 
-        Button createDeliveryRequestBtn = (Button) view.findViewById(R.id.action_button);
-        createDeliveryRequestBtn.setOnClickListener(this);
+        Button actionBtn = (Button) view.findViewById(R.id.action_button);
+        actionBtn.setOnClickListener(this);
         if(mMode == NEW_DEL_REQ_MODE){
-            createDeliveryRequestBtn.setText(R.string.create_delivery_request);
+            actionBtn.setText(R.string.create_request);
+        }else if (mMode == VIEW_DEL_REQ_MODE){
+            //actionBtn.
         }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         return view;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFinishCreatingRequest();
-        }
     }
 
     @Override
@@ -130,17 +144,27 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         int i = v.getId();
         if (i == R.id.action_button && mMode == NEW_DEL_REQ_MODE){
             String key = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).push().getKey();
-            DeliveryRequest request = new DeliveryRequest(mOrderNumberETxt.getText().toString(),"",
-                    mRestaurantNameETxt.getText().toString(),
-                    mRestaurantAddressLine1Etxt.getText().toString(),
-                    mRestaurantAddressLine2Etxt.getText().toString(),
-                    mRestaurantAddressLine3Etxt.getText().toString(),
-                    mDeliveryAddressLine1Etxt.getText().toString(),
-                    mDeliveryAddressLine2Etxt.getText().toString(),
-                    mDeliveryAddressLine3Etxt.getText().toString(),
-                    0,DeliveryRequest.DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS);
+            DeliveryRequest request = null;
+            try {
+                request = new DeliveryRequest(SysConfig.convertToStoredDateTimeFormat(Calendar.getInstance().getTime()), mOrderNumberETxt.getText().toString(),"",
+                        mRestaurantNameETxt.getText().toString(),
+                        mRestaurantAddressLine1Etxt.getText().toString(),
+                        mRestaurantAddressLine2Etxt.getText().toString(),
+                        mRestaurantAddressLine3Etxt.getText().toString(),
+                        mRestaurantAddressCityEtxt.getText().toString(),
+                        mDeliveryAddressLine1Etxt.getText().toString(),
+                        mDeliveryAddressLine2Etxt.getText().toString(),
+                        mDeliveryAddressLine3Etxt.getText().toString(),
+                        mDeliveryAddressCityEtxt.getText().toString(),
+                        0,DeliveryRequest.DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(key).setValue(request);
-            mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId).child(key).setValue("");
+            mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId).child(key).setValue(true);
+            mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(key).setValue(true);
+            Toast.makeText(getActivity(), R.string.delivery_request_created,
+                    Toast.LENGTH_SHORT).show();
             mListener.onFinishCreatingRequest();
         }
     }

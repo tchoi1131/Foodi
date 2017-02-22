@@ -1,16 +1,22 @@
 package com.foodi.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.CpuUsageInfo;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.foodi.foodi.R;
 import com.foodi.model.DeliveryOffer;
 import com.foodi.view.ViewDeliveryOfferFragment.OnListFragmentInteractionListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -24,6 +30,9 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
     private final List<DeliveryOffer> mValues;
     private final OnListFragmentInteractionListener mListener;
 
+    private SimpleDateFormat storedTimeFormat;
+    private SimpleDateFormat displayTimeFormat;
+
     public MyViewDeliveryOfferRecyclerViewAdapter(List<String> keys, List<DeliveryOffer> items, OnListFragmentInteractionListener listener) {
         mKeys = keys;
         mValues = items;
@@ -34,6 +43,8 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_view_del_offer, parent, false);
+        storedTimeFormat = new SimpleDateFormat(view.getResources().getString(R.string.stored_date_format));
+        displayTimeFormat = new SimpleDateFormat(view.getResources().getString(R.string.display_time_format));
         return new ViewHolder(view);
     }
 
@@ -41,10 +52,18 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mKey=mKeys.get(position);
         holder.mItem = mValues.get(position);
-        holder.mDriverNameView.setText(mValues.get(position).getdriverName());
+        holder.mDriverNameView.setText(mValues.get(position).getDriverName());
         holder.mOfferPriceView.setText(Double.toString(mValues.get(position).getOfferPrice()));
-        SimpleDateFormat dateTimeformat = new SimpleDateFormat("hh:mm aa");
-        holder.mEstimatedDeliveryTimeView.setText(dateTimeformat.format(mValues.get(position).getEstimatedDeliveryTime()));
+        Calendar estDelvieryCal = Calendar.getInstance();
+
+        try {
+            estDelvieryCal.setTime(storedTimeFormat.parse(mValues.get(position).getEstimatedDeliveryTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        holder.mEstimatedDeliveryTimeView.setText(displayTimeFormat.format(estDelvieryCal.getTime()));
+        holder.mOfferStatusView.setText(mValues.get(position).getOfferStatus());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +71,7 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onViewDeliveryOfferFragmentInteraction(holder.mKey,holder.mItem,DeliveryOffer.DELIVERY_Offer_STATUS_CUSTOMER_CONFIRMED);
+                    mListener.onViewDeliveryOfferFragmentInteraction(holder.mKey,holder.mItem);
                 }
             }
         });
@@ -68,6 +87,7 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
         public final TextView mDriverNameView;
         public final TextView mOfferPriceView;
         public final TextView mEstimatedDeliveryTimeView;
+        public final TextView mOfferStatusView;
         public DeliveryOffer mItem;
         public String mKey;
 
@@ -77,6 +97,7 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
             mDriverNameView = (TextView) view.findViewById(R.id.driver_name);
             mOfferPriceView = (TextView) view.findViewById(R.id.offer_price);
             mEstimatedDeliveryTimeView = (TextView) view.findViewById(R.id.est_del_time);
+            mOfferStatusView = (TextView) view.findViewById(R.id.offer_status);
         }
     }
 }

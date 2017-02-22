@@ -6,7 +6,7 @@
     android:weightSum="4">
 
     <TextView
-        android:id="@+id/order_number"
+        android:id="@+id/restaurant_address_city"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -14,30 +14,27 @@
         android:gravity="left"
         android:textAppearance="?attr/textAppearanceListItem" />
     <TextView
-        android:id="@+id/restaurant_name"
+        android:id="@+id/delivery_address_city"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:gravity="left"
         android:textAppearance="?attr/textAppearanceListItem" />
-    <EditText
+    <TextView
         android:id="@+id/offer_price"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:gravity="left"
-        android:inputType="numberDecimal"
         android:textAppearance="?attr/textAppearanceListItem" />
     <TextView
-        android:id="@+id/update_price"
+        android:id="@+id/offer_status"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="@string/update_price"
-        android:clickable="true"
         android:textAppearance="?attr/textAppearanceListItem" />
 </LinearLayout>

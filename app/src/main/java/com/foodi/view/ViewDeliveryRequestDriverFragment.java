@@ -3,6 +3,7 @@ package com.foodi.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.foodi.foodi.R;
+import com.foodi.model.DeliveryOffer;
 import com.foodi.model.DeliveryRequest;
 import com.foodi.model.SysConfig;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,10 +23,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of deliveryRequests.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
@@ -38,12 +40,16 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private MyViewDeliveryRequestDriverRecyclerViewAdapter adapter;
-    ArrayList<String> requestKeys = new ArrayList<>();
-    ArrayList<String> offerKeys = new ArrayList<>();
-    ArrayList<DeliveryRequest> items = new ArrayList<>();
+    private ArrayList<String> requestKeys = new ArrayList<>();
+    private ArrayList<String> offerKeys = new ArrayList<>();
+    private ArrayList<DeliveryRequest> deliveryRequests = new ArrayList<>();
+    private ArrayList<DeliveryOffer> deliveryOffers = new ArrayList<>();
+
+    private RecyclerView recyclerView;
 
     // [START define_database_reference]
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase = null;
+    private DatabaseReference myRequestRef = null;
     // [END define_database_reference]
 
     /**
@@ -53,8 +59,6 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
     public ViewDeliveryRequestDriverFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static ViewDeliveryRequestDriverFragment newInstance(String userId, int columnCount) {
         ViewDeliveryRequestDriverFragment fragment = new ViewDeliveryRequestDriverFragment();
         Bundle args = new Bundle();
@@ -72,31 +76,111 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             mUserId = getArguments().getString(ARG_USERID);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_view_del_req_driver_list, container, false);
-        // [START create_database_reference]
+        View outerView = inflater.inflate(R.layout.fragment_view_del_req_driver_view, container, false);
+        View listView = outerView.findViewById(R.id.delivery_request_list);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END create_database_reference]
 
-        items = new ArrayList<>();
+        // Set the adapter
+        if (listView instanceof RecyclerView) {
+            Context context = listView.getContext();
+            recyclerView = (RecyclerView) listView;
+            if (mColumnCount <= 1) {
+                LinearLayoutManager linLayoutMgr= new LinearLayoutManager(context);
+                recyclerView.setLayoutManager(linLayoutMgr);
+                recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), linLayoutMgr.getOrientation()));
+            } else {
+                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            }
+            adapter = new MyViewDeliveryRequestDriverRecyclerViewAdapter(requestKeys, deliveryRequests,
+                    offerKeys, deliveryOffers, mListener);
+            recyclerView.setAdapter(adapter);
 
-        DatabaseReference myRef = mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS);
+            if(myRequestRef == null) {
+                loadData();
+            }
+        }
+
+        return outerView;
+    }
+
+    private void loadData(){
+        myRequestRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS);
         // Attach a listener to read the data
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRequestRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> userDeliveryRequestIds = dataSnapshot.getChildren().iterator();
-                while(userDeliveryRequestIds.hasNext()) {
-                    DataSnapshot nextSnapshot = userDeliveryRequestIds.next();
-                    requestKeys.add(nextSnapshot.getKey());
-                    DeliveryRequest deliveryRequest = nextSnapshot.getValue(DeliveryRequest.class);
-                    items.add(deliveryRequest);
-                }
-                adapter.notifyDataSetChanged();
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousKey) {
+                final String requestKey1 = dataSnapshot.getKey().toString();
+                requestKeys.add(dataSnapshot.getKey());
+                DeliveryRequest deliveryRequest = dataSnapshot.getValue(DeliveryRequest.class);
+                deliveryRequests.add(deliveryRequest);
+
+                DatabaseReference deliveryRequestUserRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(dataSnapshot.getKey()).child(mUserId);
+                deliveryRequestUserRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            final DatabaseReference offerRef = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(dataSnapshot.getValue().toString());
+                            offerRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    DeliveryOffer deliveryOffer = dataSnapshot.getValue(DeliveryOffer.class);
+                                    String requestKey = deliveryOffer.getDeliveryRequestKey();
+                                    int requestKeyIndex = requestKeys.indexOf(requestKey);
+                                    if (requestKeyIndex > offerKeys.size() - 1) {
+                                        offerKeys.add(dataSnapshot.getKey());
+                                        deliveryOffers.add(deliveryOffer);
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        offerKeys.set(requestKeyIndex, dataSnapshot.getKey());
+                                        deliveryOffers.set(requestKeyIndex, deliveryOffer);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    System.out.println("The read failed: " + databaseError.getCode());
+                                }
+                            });
+                        } else {
+                            int requestKeyIndex = requestKeys.indexOf(requestKey1);
+                            if (requestKeyIndex > offerKeys.size() - 1) {
+                                offerKeys.add("");
+                                deliveryOffers.add(new DeliveryOffer());
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                int requestKeyIndex = requestKeys.indexOf(dataSnapshot.getKey());
+                deliveryRequests.set(requestKeyIndex, dataSnapshot.getValue(DeliveryRequest.class));
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -104,21 +188,6 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            adapter = new MyViewDeliveryRequestDriverRecyclerViewAdapter(offerKeys, items, mListener);
-            recyclerView.setAdapter(adapter);
-        }
-
-        return view;
     }
 
     @Override
@@ -150,6 +219,6 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
 
-        void onViewDeliveryRequestFragmentInteraction(String key, DeliveryRequest item, double offerPrice);
+        void onViewDeliveryRequestFragmentInteraction(String requestKey, final DeliveryRequest deliveryRequest, final String offerKey, final DeliveryOffer deliveryOffer);
     }
 }

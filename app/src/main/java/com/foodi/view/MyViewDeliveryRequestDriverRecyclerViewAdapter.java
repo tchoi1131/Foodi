@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.foodi.foodi.R;
+import com.foodi.model.DeliveryOffer;
 import com.foodi.model.DeliveryRequest;
 import com.foodi.view.ViewDeliveryRequestDriverFragment.OnListFragmentInteractionListener;
 
@@ -20,13 +21,19 @@ import java.util.List;
  */
 public class MyViewDeliveryRequestDriverRecyclerViewAdapter extends RecyclerView.Adapter<MyViewDeliveryRequestDriverRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DeliveryRequest> mValues;
-    private final List<String> mKeys;
+    private final List<DeliveryRequest> mRequests;
+    private final List<String> mRequestKeys;
+    private final List<String> mOfferKeys;
+    private final List<DeliveryOffer> mDeliveryOffers;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyViewDeliveryRequestDriverRecyclerViewAdapter(List<String> keys, List<DeliveryRequest> items, OnListFragmentInteractionListener listener) {
-        mKeys = keys;
-        mValues = items;
+    public MyViewDeliveryRequestDriverRecyclerViewAdapter(List<String> keys, List<DeliveryRequest> deliveryRequests,
+                                                          List<String> offerkeys, List<DeliveryOffer> deliveryOffers,
+                                                          OnListFragmentInteractionListener listener) {
+        mRequestKeys = keys;
+        mRequests = deliveryRequests;
+        mOfferKeys = offerkeys;
+        mDeliveryOffers = deliveryOffers;
         mListener = listener;
     }
 
@@ -39,19 +46,32 @@ public class MyViewDeliveryRequestDriverRecyclerViewAdapter extends RecyclerView
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mKey=mKeys.get(position);
-        holder.mItem = mValues.get(position);
-        holder.mOrderNumberView.setText(mValues.get(position).getOrderNumber());
-        holder.mRestaurantNameView.setText(mValues.get(position).getRestaurantName());
+        holder.mRequestKey=mRequestKeys.get(position);
+        holder.mOfferKey=mOfferKeys.get(position);
+        holder.mDeliveryRequest = mRequests.get(position);
+        holder.mDeliveryOffer = mDeliveryOffers.get(position);
+        holder.mRestaurantAddressCityView.setText(mRequests.get(position).getRestaurantAddressCity());
+        holder.mDeliveryAddressCityView.setText(mRequests.get(position).getDeliveryAddressCity());
+
+        if(mOfferKeys.get(position) != "") {
+            holder.mOfferPriceView.setText(mDeliveryOffers.get(position).getOfferPrice().toString());
+            holder.mOfferStatusView.setText(mDeliveryOffers.get(position).getOfferStatus());
+        }
+        else{
+            holder.mOfferPriceView.setText("");
+            holder.mOfferStatusView.setText("");
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    int offerPrice = Integer.parseInt(holder.mOfferPriceView.getText().toString());
-                    mListener.onViewDeliveryRequestFragmentInteraction(holder.mKey,holder.mItem,offerPrice);
+                    if(holder.mOfferKey == ""){
+                        mListener.onViewDeliveryRequestFragmentInteraction(holder.mRequestKey, holder.mDeliveryRequest,holder.mOfferKey,null);
+                    }
+                    else{
+                        mListener.onViewDeliveryRequestFragmentInteraction(holder.mRequestKey, holder.mDeliveryRequest, holder.mOfferKey,holder.mDeliveryOffer);
+                    }
                 }
             }
         });
@@ -59,25 +79,27 @@ public class MyViewDeliveryRequestDriverRecyclerViewAdapter extends RecyclerView
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mRequests.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mOrderNumberView;
-        public final TextView mRestaurantNameView;
-        public final EditText mOfferPriceView;
-        public final TextView mUpdatePriceView;
-        public DeliveryRequest mItem;
-        public String mKey;
+        public final TextView mRestaurantAddressCityView;
+        public final TextView mDeliveryAddressCityView;
+        public final TextView mOfferPriceView;
+        public final TextView mOfferStatusView;
+        public DeliveryRequest mDeliveryRequest;
+        public DeliveryOffer mDeliveryOffer;
+        public String mRequestKey;
+        public String mOfferKey;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mOrderNumberView = (TextView) view.findViewById(R.id.order_number);
-            mRestaurantNameView = (TextView) view.findViewById(R.id.restaurant_name);
-            mOfferPriceView = (EditText) view.findViewById(R.id.offer_price);
-            mUpdatePriceView = (TextView) view.findViewById(R.id.update_price);
+            mRestaurantAddressCityView = (TextView) view.findViewById(R.id.restaurant_address_city);
+            mDeliveryAddressCityView = (TextView) view.findViewById(R.id.delivery_address_city);
+            mOfferPriceView = (TextView) view.findViewById(R.id.offer_price);
+            mOfferStatusView = (TextView) view.findViewById(R.id.offer_status);
         }
     }
 }

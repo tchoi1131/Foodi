@@ -7,36 +7,42 @@ import java.util.Date;
  */
 
 public class DeliveryOffer {
-    public static final String DELIVERY_Offer_STATUS_WAITING_FOR_REPLY = "Waiting for reply";
-    public static final String DELIVERY_Offer_STATUS_CUSTOMER_CONFIRMED = "Customer Confirmed";
+    public static final String DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY = "Pending customer reply";
+    public static final String DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM = "Pending driver confirm";
+    public static final String DELIVERY_OFFER_STATUS_CONFIRMED = "Confirmed";
+    public static final String DELIVERY_OFFER_STATUS_REJECTED_BY_DRIVER = "Rejected by driver";
+    public static final String DELIVERY_OFFER_STATUS_REJECTED_BY_CUStOMER = "Rejected by customer";
 
-    private String orderNumber;
     private String driverName;
-    private double offerPrice;
-    private Date estimatedDeliveryTime;
+    private Double offerPrice;
+    private String estimatedDeliveryTime;
     private String offerStatus;
+    private String deliveryRequestKey;
 
     public DeliveryOffer(){
-
+        driverName = "";
+        offerPrice = 0.0;
+        estimatedDeliveryTime = "";
+        offerStatus = "";
     }
 
-    public DeliveryOffer(String orderNumber, String driverName, double offerPrice, Date estimatedDeliveryTime, String offerStatus) {
-        this.orderNumber = orderNumber;
+    public DeliveryOffer(String driverName, double offerPrice, String estimatedDeliveryTime, String offerStatus, String deliveryRequestKey) {
         this.driverName = driverName;
         this.offerPrice = offerPrice;
         this.estimatedDeliveryTime = estimatedDeliveryTime;
         this.offerStatus = offerStatus;
+        this.deliveryRequestKey = deliveryRequestKey;
     }
 
-    public String getdriverName() {
+    public String getDriverName() {
         return driverName;
     }
 
-    public void setdriverName(String driverName) {
+    public void setDriverName(String driverName) {
         this.driverName = driverName;
     }
 
-    public double getOfferPrice() {
+    public Double getOfferPrice() {
         return offerPrice;
     }
 
@@ -52,19 +58,19 @@ public class DeliveryOffer {
         this.offerStatus = offerStatus;
     }
 
-    public String getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public Date getEstimatedDeliveryTime() {
+    public String getEstimatedDeliveryTime() {
         return estimatedDeliveryTime;
     }
 
-    public void setEstimatedDeliveryTime(Date estimatedDeliveryTime) {
+    public void setEstimatedDeliveryTime(String estimatedDeliveryTime) {
         this.estimatedDeliveryTime = estimatedDeliveryTime;
+    }
+
+    public String getDeliveryRequestKey() {
+        return deliveryRequestKey;
+    }
+
+    public void setDeliveryRequestKey(String deliveryRequestKey) {
+        this.deliveryRequestKey = deliveryRequestKey;
     }
 }

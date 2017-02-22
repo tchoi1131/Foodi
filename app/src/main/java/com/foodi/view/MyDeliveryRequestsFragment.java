@@ -3,14 +3,30 @@ package com.foodi.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.foodi.foodi.R;
+import com.foodi.model.DeliveryOffer;
+import com.foodi.model.DeliveryRequest;
+import com.foodi.model.SysConfig;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.util.ArrayList;
 
 /**
  * A fragment with a Google +1 button.
@@ -26,7 +42,14 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
 
 
     private DatabaseReference mDatabase;
+    private DatabaseReference userRequestsRef = null;
+
     private String mUserId;
+    private ArrayList<String> requestKeys = new ArrayList<>();
+    private ArrayList<DeliveryRequest> deliveryRequests = new ArrayList<>();
+
+    private View view;
+    private TableLayout tableLayout;
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,19 +78,166 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
         if (getArguments() != null) {
             mUserId = getArguments().getString(ARG_USERID);
         }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_delivery_requests, container, false);
+        view = inflater.inflate(R.layout.fragment_my_delivery_requests, container, false);
         FloatingActionButton mCreateDeliveryRequestFAB = (FloatingActionButton) view.findViewById(R.id.AddFAB);
         mCreateDeliveryRequestFAB.setOnClickListener(this);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        tableLayout = (TableLayout) view.findViewById(R.id.request_table);
+        mCreateDeliveryRequestFAB.setOnClickListener(this);
+
+        if(userRequestsRef == null) {
+            loadData();
+        }
+
 
         return view;
+    }
+
+    private void loadData(){
+        userRequestsRef = mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId);
+        userRequestsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                DatabaseReference deliveryRequestRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(dataSnapshot.getKey().toString());
+                deliveryRequestRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                        final DeliveryRequest deliveryRequest = dataSnapshot.getValue(DeliveryRequest.class);
+                        final String requestKey = dataSnapshot.getKey().toString();
+                        int requestKeyIndex = requestKeys.indexOf(requestKey);
+                        if(requestKeyIndex == -1) {
+                            requestKeys.add(requestKey);
+                            //create new row
+                            TableRow row = new TableRow(view.getContext());
+                            row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+                            row.setWeightSum(3);
+                            //Date
+                            TextView textView = new TextView(view.getContext());
+                            textView.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+                            textView.setGravity(Gravity.LEFT);
+                            if (deliveryRequest.getRequestDateTime() != null) {
+                                try {
+                                    textView.setText(SysConfig.getDisplayShortDate(deliveryRequest.getRequestDateTime()));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            textView.setTag(getString(R.string.request_date));
+                            row.addView(textView);
+
+                            //Restaurant Name
+                            textView = new TextView(view.getContext());
+                            textView.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+                            textView.setGravity(Gravity.LEFT);
+                            textView.setText(deliveryRequest.getRestaurantName());
+                            textView.setTag(getString(R.string.restaurant_name));
+                            row.addView(textView);
+
+                            //Request Status
+                            textView = new TextView(view.getContext());
+                            textView.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+                            textView.setGravity(Gravity.LEFT);
+                            textView.setText(deliveryRequest.getDeliveryRequestStatus());
+                            textView.setTag(getString(R.string.request_status));
+                            textView.setClickable(true);
+                            textView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    DatabaseReference requestConfirmedOfferRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_CONFIRMED_OFFER).child(requestKey);
+                                    requestConfirmedOfferRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                String offerKey = dataSnapshot.getValue().toString();
+                                                DatabaseReference offerRef = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(offerKey);
+                                                offerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        DeliveryOffer deliveryOffer = dataSnapshot.getValue(DeliveryOffer.class);
+                                                        try {
+                                                            mListener.onChangeDelReqStatusFragmentInteraction(requestKey, deliveryRequest, deliveryOffer);
+                                                        } catch (ParseException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            });
+                            row.addView(textView);
+                            tableLayout.addView(row);
+                        }
+                        else{
+                            View tableRowView = tableLayout.getChildAt(requestKeyIndex);
+                            if(tableRowView instanceof TableRow){
+                                TableRow tableRow = (TableRow) tableRowView;
+                                for(int i = 0; i < tableRow.getChildCount(); i++){
+                                    TextView textView = (TextView)tableRow.getChildAt(i);
+
+                                    if (textView.getTag() == getString(R.string.request_date)){
+                                        try {
+                                            textView.setText(SysConfig.getDisplayShortDate(deliveryRequest.getRequestDateTime()));
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    else if(textView.getTag() == getString(R.string.restaurant_name)){
+                                        textView.setText(deliveryRequest.getRestaurantName());
+                                    }
+                                    else if(textView.getTag() == getString(R.string.request_status)){
+                                        textView.setText(deliveryRequest.getDeliveryRequestStatus());
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -107,6 +277,7 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
      */
     public interface OnFragmentInteractionListener {
         void onCreateDelReqFragmentInteraction();
+        void onChangeDelReqStatusFragmentInteraction(String requestKey, DeliveryRequest deliveryRequest, DeliveryOffer deliveryOffer) throws ParseException;
     }
 
 }

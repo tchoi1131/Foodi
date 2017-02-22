@@ -15,8 +15,8 @@
     <item android:title="Driver">
         <menu>
             <item
-                android:id="@+id/nav_manage_delivery_offers"
-                android:title="@string/nav_manage_delivery_offers" />
+                android:id="@+id/nav_browse_delivery_offers"
+                android:title="@string/nav_browse_delivery_request" />
         </menu>
     </item>
     <item

@@ -5,17 +5,22 @@ package com.foodi.model;
  */
 
 public class DeliveryRequest {
-    public static final String DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS = "AcceptingOffers";
+    public static final String DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS = "Accepting offers";
+    public static final String DELIVERY_REQUEST_STATUS_DELIVERY_IN_PROGRESS = "Delivery in progress";
+    public static final String DELIVERY_REQUEST_STATUS_DELIVERED = "Delivered";
 
+    private String requestDateTime;
     private String orderNumber;
     private String driverUserId;
     private String restaurantName;
     private String restaurantAddressLine1;
     private String restaurantAddressLine2;
     private String restaurantAddressLine3;
+    private String restaurantAddressCity;
     private String deliveryAddressLine1;
     private String deliveryAddressLine2;
     private String deliveryAddressLine3;
+    private String deliveryAddressCity;
     private int maxReward;
     private String deliveryRequestStatus;
 
@@ -23,20 +28,23 @@ public class DeliveryRequest {
 
     }
 
-    public DeliveryRequest(String orderNumber, String driverUserId, String restaurantName,
+    public DeliveryRequest(String requestDateTime, String orderNumber, String driverUserId, String restaurantName,
                            String restaurantAddressLine1, String restaurantAddressLine2,
-                           String restaurantAddressLine3, String deliveryAddressLine1,
+                           String restaurantAddressLine3, String restaurantCity, String deliveryAddressLine1,
                            String deliveryAddressLine2, String deliveryAddressLine3,
-                           int maxReward, String deliveryRequestStatus) {
+                           String deliveryAddressCity, int maxReward, String deliveryRequestStatus) {
+        this.requestDateTime = requestDateTime;
         this.orderNumber = orderNumber;
         this.driverUserId = driverUserId;
         this.restaurantName = restaurantName;
         this.restaurantAddressLine1 = restaurantAddressLine1;
         this.restaurantAddressLine2 = restaurantAddressLine2;
         this.restaurantAddressLine3 = restaurantAddressLine3;
+        this.restaurantAddressCity = restaurantCity;
         this.deliveryAddressLine1 = deliveryAddressLine1;
         this.deliveryAddressLine2 = deliveryAddressLine2;
         this.deliveryAddressLine3 = deliveryAddressLine3;
+        this.deliveryAddressCity = deliveryAddressCity;
         this.maxReward = maxReward;
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
@@ -62,11 +70,11 @@ public class DeliveryRequest {
         this.maxReward = maxReward;
     }
 
-    public String getDeliveryOrderStatus() {
+    public String getDeliveryRequestStatus() {
         return deliveryRequestStatus;
     }
 
-    public void setDeliveryOrderStatus(String deliveryRequestStatus) {
+    public void setDeliveryRequestStatus(String deliveryRequestStatus) {
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
 
@@ -124,5 +132,29 @@ public class DeliveryRequest {
 
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public String getRestaurantAddressCity() {
+        return restaurantAddressCity;
+    }
+
+    public void setRestaurantAddressCity(String restaurantCity) {
+        this.restaurantAddressCity = restaurantCity;
+    }
+
+    public String getDeliveryAddressCity() {
+        return deliveryAddressCity;
+    }
+
+    public void setDeliveryAddressCity(String deliveryAddressCity) {
+        this.deliveryAddressCity = deliveryAddressCity;
+    }
+
+    public String getRequestDateTime() {
+        return requestDateTime;
+    }
+
+    public void setRequestDateTime(String requestTime) {
+        this.requestDateTime = requestTime;
     }
 }
