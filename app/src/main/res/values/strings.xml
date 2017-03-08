@@ -28,8 +28,7 @@
 
     <string name="nav_my_delivery_requests">My Delivery Requests</string>
     <string name="nav_check_delivery_offers">Check Delivery Offers</string>
-    <string name="nav_browse_delivery_request">Browse Delivery Request</string>
-    <string name="nav_restaurant_manage_orders">Manage Orders</string>
+    <string name="nav_browse_delivery_requests">Browse Delivery Requests</string>
     <string name="nav_email_sign_out">Sign out</string>
 
     <string name="nav_customer_manage_orders">Manage Orders</string>
@@ -85,8 +84,10 @@
         Request Date: %1$s\n
         Request Time: %2$s\n
         Restaurant: %3$s\n
-        Driver: $%4$s\n
+        Driver: %4$s\n
         Reward: $%5$s\n
     </string>
+    <string name="customer">Customer</string>
+    <string name="driver">Driver</string>
 
 </resources>

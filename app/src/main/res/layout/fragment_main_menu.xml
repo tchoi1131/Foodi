@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.foodi.view.MainMenuFragment">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/section_margin" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textColor="@color/black"
+        android:textSize="@dimen/main_header_text_size"
+        android:text="@string/customer" />
+    <Button
+        android:text="@string/nav_my_delivery_requests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/my_delivery_requests_btn"/>
+    <Button
+        android:text="@string/nav_check_delivery_offers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/check_delivery_offers_btn"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/section_margin" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textColor="@color/black"
+        android:textSize="@dimen/main_header_text_size"
+        android:text="@string/driver"/>
+    <Button
+        android:text="@string/nav_browse_delivery_requests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/browse_delivery_request_btn"/>
+
+</LinearLayout>

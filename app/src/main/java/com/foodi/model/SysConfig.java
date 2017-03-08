@@ -10,9 +10,6 @@ import java.util.Date;
 
 public class SysConfig {
     public static final String FBDB_SYS_CONFIGS = "SysConfigs";
-    public static final String FBDB_ORDERS = "Orders";
-    public static final String FBDB_ORDER_DETAILS = "OrderDetails";
-    public static final String FBDB_FOODS = "Foods";
     public static final String FBDB_USERS = "Users";
     public static final String FBDB_DELIVERY_REQUESTS = "DeliveryRequests";
     public static final String FBDB_USER_DELIVERY_REQUESTS = "UserDeliveryRequest";
@@ -41,37 +38,22 @@ public class SysConfig {
 
     public static String convertToStoredDateTimeFormat(Date dateTime) throws ParseException {
         SimpleDateFormat storedDateFormat = new SimpleDateFormat(SysConfig.STORED_DATE_FORMAT);
-        SimpleDateFormat displayTimeFormat = new SimpleDateFormat(SysConfig.DISPLAY_TIME_FORMAT);
 
         return storedDateFormat.format(dateTime);
     }
 
-    private int nextFoodId;
-    private int nextOrderId;
+    public static String convertToDisplayDateTimeFormat(Date dateTime) throws ParseException {
+        SimpleDateFormat displayTimeFormat = new SimpleDateFormat(SysConfig.DISPLAY_TIME_FORMAT);
+
+        return displayTimeFormat.format(dateTime);
+    }
+
 
     public SysConfig(){
 
     }
 
     public SysConfig(int nextFoodId, int nextOrderId) {
-        this.nextFoodId = nextFoodId;
-        this.nextOrderId = nextOrderId;
-    }
 
-    public int getNextFoodId() {
-        return nextFoodId;
     }
-
-    public void setNextFoodId(int nextFoodId) {
-        this.nextFoodId = nextFoodId;
-    }
-
-    public int getNextOrderId() {
-        return nextOrderId;
-    }
-
-    public void setNextOrderId(int nextOrderId) {
-        this.nextOrderId = nextOrderId;
-    }
-
 }

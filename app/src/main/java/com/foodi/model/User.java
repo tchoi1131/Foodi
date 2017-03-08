@@ -10,7 +10,6 @@ public class User {
     private String userId;
     private String email;
     private String userName;
-    private ArrayList<Integer> roles;
 
     //constructors
     public User(){
@@ -21,7 +20,6 @@ public class User {
         this.userId = userId;
         this.email = email;
         this.userName = userName;
-        this.roles = roles;
     }
 
     public String getUserId() {
@@ -42,13 +40,5 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public ArrayList<Integer> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(ArrayList<Integer> roles) {
-        this.roles = roles;
     }
 }

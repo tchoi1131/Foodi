@@ -215,7 +215,7 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/cancel_button"
+                    android:id="@+id/cancel_btn"
                     android:layout_below="@id/tablelayout"
                     android:layout_alignParentRight="true" />
                 <Button

@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.foodi.foodi.R;
 import com.foodi.model.DeliveryOffer;
+import com.foodi.model.SysConfig;
 import com.foodi.view.ViewDeliveryOfferFragment.OnListFragmentInteractionListener;
 
 import java.text.ParseException;
@@ -27,15 +28,12 @@ import java.util.List;
 public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter<MyViewDeliveryOfferRecyclerViewAdapter.ViewHolder> {
 
     private final List<String> mKeys;
-    private final List<DeliveryOffer> mValues;
+    private final List<DeliveryOffer> mDelivaryOffers;
     private final OnListFragmentInteractionListener mListener;
-
-    private SimpleDateFormat storedTimeFormat;
-    private SimpleDateFormat displayTimeFormat;
 
     public MyViewDeliveryOfferRecyclerViewAdapter(List<String> keys, List<DeliveryOffer> items, OnListFragmentInteractionListener listener) {
         mKeys = keys;
-        mValues = items;
+        mDelivaryOffers = items;
         mListener = listener;
     }
 
@@ -43,27 +41,22 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_view_del_offer, parent, false);
-        storedTimeFormat = new SimpleDateFormat(view.getResources().getString(R.string.stored_date_format));
-        displayTimeFormat = new SimpleDateFormat(view.getResources().getString(R.string.display_time_format));
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mKey=mKeys.get(position);
-        holder.mItem = mValues.get(position);
-        holder.mDriverNameView.setText(mValues.get(position).getDriverName());
-        holder.mOfferPriceView.setText(Double.toString(mValues.get(position).getOfferPrice()));
-        Calendar estDelvieryCal = Calendar.getInstance();
+        holder.mItem = mDelivaryOffers.get(position);
+        holder.mDriverNameView.setText(mDelivaryOffers.get(position).getDriverName());
+        holder.mOfferPriceView.setText(Double.toString(mDelivaryOffers.get(position).getOfferPrice()));
 
         try {
-            estDelvieryCal.setTime(storedTimeFormat.parse(mValues.get(position).getEstimatedDeliveryTime()));
+            holder.mEstimatedDeliveryTimeView.setText(SysConfig.getDisplayTime(mDelivaryOffers.get(position).getEstimatedDeliveryTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        holder.mEstimatedDeliveryTimeView.setText(displayTimeFormat.format(estDelvieryCal.getTime()));
-        holder.mOfferStatusView.setText(mValues.get(position).getOfferStatus());
+        holder.mOfferStatusView.setText(mDelivaryOffers.get(position).getOfferStatus());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +72,7 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mDelivaryOffers.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

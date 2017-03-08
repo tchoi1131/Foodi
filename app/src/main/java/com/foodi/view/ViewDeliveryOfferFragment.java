@@ -37,7 +37,7 @@ public class ViewDeliveryOfferFragment extends Fragment {
     private String mUserId ;
     private ViewDeliveryOfferFragment.OnListFragmentInteractionListener mListener;
 
-    private MyViewDeliveryOfferRecyclerViewAdapter adapter;    ArrayList<String> requestKeys = new ArrayList<>();
+    private MyViewDeliveryOfferRecyclerViewAdapter adapter;
     ArrayList<String> offerKeys = new ArrayList<>();
     ArrayList<DeliveryOffer> items = new ArrayList<>();
 
@@ -123,12 +123,11 @@ public class ViewDeliveryOfferFragment extends Fragment {
                                 if( offerKeyIndex == -1) {
                                     offerKeys.add(dataSnapshot.getKey());
                                     items.add(deliveryOffer);
-                                    adapter.notifyDataSetChanged();
                                 }
                                 else{
                                     items.set(offerKeyIndex, deliveryOffer);
-                                    adapter.notifyDataSetChanged();
                                 }
+                                adapter.notifyDataSetChanged();
                             }
 
                             @Override

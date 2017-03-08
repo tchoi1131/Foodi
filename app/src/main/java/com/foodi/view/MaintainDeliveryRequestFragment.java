@@ -111,6 +111,10 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
 
         Button actionBtn = (Button) view.findViewById(R.id.action_button);
         actionBtn.setOnClickListener(this);
+
+        Button cancelBtn = (Button) view.findViewById(R.id.cancel_btn);
+        cancelBtn.setOnClickListener(this);
+
         if(mMode == NEW_DEL_REQ_MODE){
             actionBtn.setText(R.string.create_request);
         }else if (mMode == VIEW_DEL_REQ_MODE){
@@ -166,6 +170,9 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
             Toast.makeText(getActivity(), R.string.delivery_request_created,
                     Toast.LENGTH_SHORT).show();
             mListener.onFinishCreatingRequest();
+        }
+        else if(i == R.id.cancel_btn){
+            getActivity().getFragmentManager().popBackStack();
         }
     }
 

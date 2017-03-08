@@ -78,6 +78,14 @@ public class DeliveryRequest {
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
 
+    public String getRestaurantAddress() {
+
+        return restaurantAddressLine1 + "\n" +
+                restaurantAddressLine2 + "\n" +
+                restaurantAddressLine3 + "\n" +
+                restaurantAddressCity;
+    }
+
     public String getRestaurantAddressLine1() {
         return restaurantAddressLine1;
     }
@@ -100,6 +108,14 @@ public class DeliveryRequest {
 
     public void setRestaurantAddressLine3(String restaurantAddressLine3) {
         this.restaurantAddressLine3 = restaurantAddressLine3;
+    }
+
+
+    public String getDeliveryAddress() {
+        return deliveryAddressLine1 + "\n" +
+                deliveryAddressLine2 + "\n" +
+                deliveryAddressLine3 + "\n" +
+                deliveryAddressCity;
     }
 
     public String getDeliveryAddressLine1() {

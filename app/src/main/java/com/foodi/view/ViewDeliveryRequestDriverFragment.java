@@ -117,60 +117,60 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
         myRequestRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousKey) {
-                final String requestKey1 = dataSnapshot.getKey().toString();
-                requestKeys.add(dataSnapshot.getKey());
                 DeliveryRequest deliveryRequest = dataSnapshot.getValue(DeliveryRequest.class);
-                deliveryRequests.add(deliveryRequest);
 
-                DatabaseReference deliveryRequestUserRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(dataSnapshot.getKey()).child(mUserId);
-                deliveryRequestUserRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            final DatabaseReference offerRef = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(dataSnapshot.getValue().toString());
-                            offerRef.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    DeliveryOffer deliveryOffer = dataSnapshot.getValue(DeliveryOffer.class);
-                                    String requestKey = deliveryOffer.getDeliveryRequestKey();
-                                    int requestKeyIndex = requestKeys.indexOf(requestKey);
-                                    if (requestKeyIndex > offerKeys.size() - 1) {
-                                        offerKeys.add(dataSnapshot.getKey());
-                                        deliveryOffers.add(deliveryOffer);
-                                        adapter.notifyDataSetChanged();
-                                    } else {
-                                        offerKeys.set(requestKeyIndex, dataSnapshot.getKey());
-                                        deliveryOffers.set(requestKeyIndex, deliveryOffer);
+                if(!deliveryRequest.getDeliveryRequestStatus().equals(DeliveryRequest.DELIVERY_REQUEST_STATUS_DELIVERED)) {
+                    requestKeys.add(dataSnapshot.getKey());
+                    deliveryRequests.add(deliveryRequest);
+
+                    offerKeys.add("");
+                    deliveryOffers.add(new DeliveryOffer());
+
+                    DatabaseReference deliveryRequestUserRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(dataSnapshot.getKey()).child(mUserId);
+                    deliveryRequestUserRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                DatabaseReference offerRef = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(dataSnapshot.getValue().toString());
+                                offerRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        DeliveryOffer deliveryOffer = dataSnapshot.getValue(DeliveryOffer.class);
+                                        String requestKey = deliveryOffer.getDeliveryRequestKey();
+                                        int requestKeyIndex = requestKeys.indexOf(requestKey);
+                                        if (requestKeyIndex > offerKeys.size() - 1) {
+                                            offerKeys.add(dataSnapshot.getKey());
+                                            deliveryOffers.add(deliveryOffer);
+                                        } else {
+                                            offerKeys.set(requestKeyIndex, dataSnapshot.getKey());
+                                            deliveryOffers.set(requestKeyIndex, deliveryOffer);
+                                        }
                                         adapter.notifyDataSetChanged();
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    System.out.println("The read failed: " + databaseError.getCode());
-                                }
-                            });
-                        } else {
-                            int requestKeyIndex = requestKeys.indexOf(requestKey1);
-                            if (requestKeyIndex > offerKeys.size() - 1) {
-                                offerKeys.add("");
-                                deliveryOffers.add(new DeliveryOffer());
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        System.out.println("The read failed: " + databaseError.getCode());
+                                    }
+                                });
+                            } else {
                                 adapter.notifyDataSetChanged();
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        System.out.println("The read failed: " + databaseError.getCode());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println("The read failed: " + databaseError.getCode());
+                        }
+                    });
+                }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 int requestKeyIndex = requestKeys.indexOf(dataSnapshot.getKey());
                 deliveryRequests.set(requestKeyIndex, dataSnapshot.getValue(DeliveryRequest.class));
+                adapter.notifyDataSetChanged();
             }
 
             @Override

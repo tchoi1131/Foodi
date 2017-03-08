@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,12 +33,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 
 public class MainMenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
+        implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener,
         MyDeliveryRequestsFragment.OnFragmentInteractionListener,
         MaintainDeliveryRequestFragment.OnFragmentInteractionListener,
         ViewDeliveryRequestDriverFragment.OnListFragmentInteractionListener,
         ViewDeliveryOfferFragment.OnListFragmentInteractionListener,
-        SetDeliveryOfferFragment.OnFragmentInteractionListener{
+        SetDeliveryOfferFragment.OnFragmentInteractionListener ,
+        MainMenuFragment.OnFragmentInteractionListener{
     //Tag for debug
     private static final String TAG = "MainMenuActivity";
 
@@ -55,10 +58,10 @@ public class MainMenuActivity extends AppCompatActivity
     private String userId;
     private User mUser;
 
-    private FragmentManager fragmentManager ;
+    private FragmentManager fragmentManager;
 
     private MaintainDeliveryRequestFragment maintainDeliveryRequestFragment;
-    private MyDeliveryRequestsFragment myDeliveryRequestsFragment ;
+    private MyDeliveryRequestsFragment myDeliveryRequestsFragment;
     private SetDeliveryOfferFragment setDeliveryOfferFragment;
     private ViewDeliveryOfferFragment viewDeliveryOfferFragment;
     private ViewDeliveryRequestDriverFragment viewDeliveryRequestDriverFragment;
@@ -88,7 +91,7 @@ public class MainMenuActivity extends AppCompatActivity
         userId = mAuth.getCurrentUser().getUid();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        if(userId != null) {
+        if (userId != null) {
             mDatabase.child(SysConfig.FBDB_USERS).child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -105,6 +108,9 @@ public class MainMenuActivity extends AppCompatActivity
         }
 
         fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_main_menu, MainMenuFragment.newInstance(), MainMenuFragment.class.toString())
+                .commit();
     }
 
     private void signOut() {
@@ -159,22 +165,25 @@ public class MainMenuActivity extends AppCompatActivity
             // Insert the fragment by replacing any existing fragment
             fragmentManager.beginTransaction()
                     .replace(R.id.content_main_menu, myDeliveryRequestsFragment, MyDeliveryRequestsFragment.class.toString())
+                    .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_check_delivery_offers) {
             // Handle the customer order action
-            viewDeliveryOfferFragment = ViewDeliveryOfferFragment.newInstance(userId,1);
+            viewDeliveryOfferFragment = ViewDeliveryOfferFragment.newInstance(userId, 1);
 
             // Insert the fragment by replacing any existing fragment
             fragmentManager.beginTransaction()
-                    .replace(R.id.content_main_menu, viewDeliveryOfferFragment,ViewDeliveryOfferFragment.class.getName())
+                    .replace(R.id.content_main_menu, viewDeliveryOfferFragment, ViewDeliveryOfferFragment.class.getName())
+                    .addToBackStack(null)
                     .commit();
-        } else if (id == R.id.nav_browse_delivery_offers) {
+        } else if (id == R.id.nav_browse_delivery_requests) {
             // Handle the customer order action
-            viewDeliveryRequestDriverFragment = ViewDeliveryRequestDriverFragment.newInstance(userId,1);
+            viewDeliveryRequestDriverFragment = ViewDeliveryRequestDriverFragment.newInstance(userId, 1);
 
             // Insert the fragment by replacing any existing fragment
             fragmentManager.beginTransaction()
-                    .replace(R.id.content_main_menu, viewDeliveryRequestDriverFragment,ViewDeliveryRequestDriverFragment.class.toString())
+                    .replace(R.id.content_main_menu, viewDeliveryRequestDriverFragment, ViewDeliveryRequestDriverFragment.class.toString())
+                    .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_email_sign_out) {
             signOut();
@@ -188,7 +197,7 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onCreateDelReqFragmentInteraction() {
         // Handle the customer order action
-        maintainDeliveryRequestFragment = MaintainDeliveryRequestFragment.newInstance(userId,MaintainDeliveryRequestFragment.NEW_DEL_REQ_MODE);
+        maintainDeliveryRequestFragment = MaintainDeliveryRequestFragment.newInstance(userId, MaintainDeliveryRequestFragment.NEW_DEL_REQ_MODE);
 
         // Insert the fragment by replacing any existing fragment
         fragmentManager.beginTransaction()
@@ -199,24 +208,26 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void onChangeDelReqStatusFragmentInteraction(final String requestKey, final DeliveryRequest deliveryRequest, DeliveryOffer deliveryOffer) throws ParseException {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage(getString(R.string.update_to_delivered,
-                SysConfig.getDisplayShortDate(deliveryRequest.getRequestDateTime()),
-                SysConfig.getDisplayTime(deliveryRequest.getRequestDateTime()),deliveryRequest.getRestaurantName(),
-                deliveryOffer.getDriverName(),deliveryOffer.getOfferPrice().toString()));
-        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                deliveryRequest.setDeliveryRequestStatus(DeliveryRequest.DELIVERY_REQUEST_STATUS_DELIVERED);
-                mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(requestKey).setValue(deliveryRequest);
-                Toast.makeText(MainMenuActivity.this, getString(R.string.request_status_changed), Toast.LENGTH_LONG).show();
-            }
-        });
+        if(deliveryRequest.getDeliveryRequestStatus().equals(DeliveryRequest.DELIVERY_REQUEST_STATUS_DELIVERY_IN_PROGRESS)) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage(getString(R.string.update_to_delivered,
+                    SysConfig.getDisplayShortDate(deliveryRequest.getRequestDateTime()),
+                    SysConfig.getDisplayTime(deliveryRequest.getRequestDateTime()), deliveryRequest.getRestaurantName(),
+                    deliveryOffer.getDriverName(), deliveryOffer.getOfferPrice().toString()));
+            alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    deliveryRequest.setDeliveryRequestStatus(DeliveryRequest.DELIVERY_REQUEST_STATUS_DELIVERED);
+                    mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(requestKey).setValue(deliveryRequest);
+                    Toast.makeText(MainMenuActivity.this, getString(R.string.request_status_changed), Toast.LENGTH_LONG).show();
+                }
+            });
 
-        alertDialogBuilder.setNegativeButton(R.string.no,null);
+            alertDialogBuilder.setNegativeButton(R.string.no, null);
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -226,23 +237,28 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void onViewDeliveryRequestFragmentInteraction(final String requestKey, final DeliveryRequest deliveryRequest, final String offerKey, final DeliveryOffer deliveryOffer) {
-        if(offerKey == "") {
+        if (offerKey == "") {
             // Handle the customer order action
-            setDeliveryOfferFragment = SetDeliveryOfferFragment.newInstance(requestKey, userId);
+            setDeliveryOfferFragment = SetDeliveryOfferFragment.newInstance(requestKey, offerKey);
 
             // Insert the fragment by replacing any existing fragment
             fragmentManager.beginTransaction()
                     .replace(R.id.content_main_menu, setDeliveryOfferFragment)
                     .addToBackStack(null)
                     .commit();
-        }
-        else if(deliveryOffer.getOfferStatus().equals(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY)){
-            //change offer price
-        }
-        else if(deliveryOffer.getOfferStatus().equals(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM)){
+        } else if (deliveryOffer.getOfferStatus().equals(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY)) {
+            //change offer
+            setDeliveryOfferFragment = SetDeliveryOfferFragment.newInstance(requestKey, offerKey);
+
+            // Insert the fragment by replacing any existing fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, setDeliveryOfferFragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else if (deliveryOffer.getOfferStatus().equals(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM)) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage(getString(R.string.confirm_offer,deliveryRequest.getRestaurantAddressCity(),
-                    deliveryRequest.getDeliveryAddressCity(),deliveryOffer.getOfferPrice().toString()));
+            alertDialogBuilder.setMessage(getString(R.string.confirm_offer, deliveryRequest.getRestaurantAddressCity(),
+                    deliveryRequest.getDeliveryAddressCity(), deliveryOffer.getOfferPrice().toString()));
             alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
@@ -255,7 +271,38 @@ public class MainMenuActivity extends AppCompatActivity
                 }
             });
 
-            alertDialogBuilder.setNegativeButton(R.string.no,null);
+            alertDialogBuilder.setNegativeButton(R.string.no, null);
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+        else{
+            //view offer
+            setDeliveryOfferFragment = SetDeliveryOfferFragment.newInstance(requestKey, offerKey);
+
+            // Insert the fragment by replacing any existing fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, setDeliveryOfferFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onViewDeliveryOfferFragmentInteraction(final String key, final DeliveryOffer deliveryOffer) {
+        if(deliveryOffer.getOfferStatus().equals(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY)) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage(getString(R.string.acceptOffer, deliveryOffer.getDriverName()));
+            alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    deliveryOffer.setOfferStatus(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM);
+                    mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(key).setValue(deliveryOffer);
+                    Toast.makeText(MainMenuActivity.this, getString(R.string.acceptedOffer, deliveryOffer.getDriverName()), Toast.LENGTH_LONG).show();
+                }
+            });
+
+            alertDialogBuilder.setNegativeButton(R.string.no, null);
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -263,31 +310,47 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onViewDeliveryOfferFragmentInteraction(final String key, final DeliveryOffer deliveryOffer) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage(getString(R.string.acceptOffer,deliveryOffer.getDriverName()));
-        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                deliveryOffer.setOfferStatus(DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM);
-                mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(key).setValue(deliveryOffer);
-                Toast.makeText(MainMenuActivity.this, getString(R.string.acceptedOffer,deliveryOffer.getDriverName()), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        alertDialogBuilder.setNegativeButton(R.string.no,null);
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
-    @Override
     public void onSetDeliveryOfferFragmentInteraction(String requestKey, double offerPrice, String estDeliveryTime) {
-        DeliveryOffer deliveryOffer = new DeliveryOffer(mUser.getUserName(),offerPrice, estDeliveryTime, DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY, requestKey);
+        DeliveryOffer deliveryOffer = new DeliveryOffer(mUser.getUserName(), offerPrice, estDeliveryTime, DeliveryOffer.DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY, requestKey);
         String offerKey = mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).push().getKey();
         mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(requestKey).child(mUser.getUserId()).setValue(offerKey);
         mDatabase.child(SysConfig.FBDB_USER_DELIVERY_OFFER).child(mUser.getUserId()).child(offerKey).setValue(true);
         mDatabase.child(SysConfig.FBDB_DELIVERY_OFFERS).child(offerKey).setValue(deliveryOffer);
         fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onMainMenuFragmentInteraction(int id) {
+        if (id == R.id.my_delivery_requests_btn) {
+            myDeliveryRequestsFragment = MyDeliveryRequestsFragment.newInstance(userId);
+
+            // Insert the fragment by replacing any existing fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, myDeliveryRequestsFragment, MyDeliveryRequestsFragment.class.toString())
+                    .addToBackStack(null)
+                    .commit();
+        } else if (id == R.id.check_delivery_offers_btn) {
+            viewDeliveryOfferFragment = ViewDeliveryOfferFragment.newInstance(userId, 1);
+
+            // Insert the fragment by replacing any existing fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, viewDeliveryOfferFragment, ViewDeliveryOfferFragment.class.getName())
+                    .addToBackStack(null)
+                    .commit();
+        } else if (id == R.id.browse_delivery_request_btn) {
+            // Handle the customer order action
+            viewDeliveryRequestDriverFragment = ViewDeliveryRequestDriverFragment.newInstance(userId, 1);
+
+            // Insert the fragment by replacing any existing fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main_menu, viewDeliveryRequestDriverFragment, ViewDeliveryRequestDriverFragment.class.toString())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }
