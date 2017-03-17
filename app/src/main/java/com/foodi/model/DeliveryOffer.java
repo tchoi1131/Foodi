@@ -1,24 +1,25 @@
 package com.foodi.model;
 
-import java.util.Date;
-
 /**
  * Created by Tom Wong on 1/31/2017.
+ * Class created to store delivery offers created by drivers
  */
 
 public class DeliveryOffer {
+    //Possible Statuses for a Delivery Offer
     public static final String DELIVERY_OFFER_STATUS_PENDING_CUSTOMER_REPLY = "Pending customer reply";
     public static final String DELIVERY_OFFER_STATUS_PENDING_DRIVER_CONFIRM = "Pending driver confirm";
     public static final String DELIVERY_OFFER_STATUS_CONFIRMED = "Confirmed";
     public static final String DELIVERY_OFFER_STATUS_REJECTED_BY_DRIVER = "Rejected by driver";
     public static final String DELIVERY_OFFER_STATUS_REJECTED_BY_CUStOMER = "Rejected by customer";
 
-    private String driverName;
-    private Double offerPrice;
-    private String estimatedDeliveryTime;
-    private String offerStatus;
-    private String deliveryRequestKey;
+    private String driverName;                  //driver name
+    private Double offerPrice;                  //offer Price
+    private String estimatedDeliveryTime;       //estimated delivery time
+    private String offerStatus;                 //offer status
+    private String deliveryRequestKey;          //delivery request key of the corresponding delivery request created by customers
 
+    //default constructor
     public DeliveryOffer(){
         driverName = "";
         offerPrice = 0.0;
@@ -26,6 +27,14 @@ public class DeliveryOffer {
         offerStatus = "";
     }
 
+    /**
+     * create Delivery offer using the input parameters
+     * @param driverName: Driver's name
+     * @param offerPrice: Price suggested by driver for the reward after delivery
+     * @param estimatedDeliveryTime: Estimated delivery time suggest by the driver
+     * @param offerStatus: offer status
+     * @param deliveryRequestKey: the corresponding delivery request key
+     */
     public DeliveryOffer(String driverName, double offerPrice, String estimatedDeliveryTime, String offerStatus, String deliveryRequestKey) {
         this.driverName = driverName;
         this.offerPrice = offerPrice;
@@ -34,6 +43,7 @@ public class DeliveryOffer {
         this.deliveryRequestKey = deliveryRequestKey;
     }
 
+    //getters and setters
     public String getDriverName() {
         return driverName;
     }

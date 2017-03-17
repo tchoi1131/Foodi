@@ -5,39 +5,33 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.widget.TextView;
-
 import com.foodi.foodi.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.ui.IconGenerator;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class DeliveryOfferMapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    //Constant to get the Arguments passed to the intent
     public static final String DELIVERY_PATH = "DeliveryPath";
     public static final String MARKER_LOCATIONS = "MarkerLocations";
     public static final String MARKER_NAMES = "MarkerNames";
 
     private GoogleMap mMap;
-    private ArrayList<LatLng> deliveryPath = null;
-    private ArrayList<LatLng> markerLocations = null;
-    private ArrayList<String> markerNames = null;
+    private ArrayList<LatLng> deliveryPath = null;      //Latitude and Longitude of the delivey paths
+    private ArrayList<LatLng> markerLocations = null;   //Latitude and Longitude of the Markers on the map
+    private ArrayList<String> markerNames = null;       //Name of the markers
 
-    private Double maxLat = null;
-    private Double minLat = null;
-    private Double maxLng = null;
-    private Double minLng = null;
+    private Double maxLat = null;       //maximum Latitude of paths in the map
+    private Double minLat = null;       //minimum Latitude of paths in the map
+    private Double maxLng = null;       //maximum Longitude of paths in the map
+    private Double minLng = null;       //minimum Longitude of paths in the map
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +42,12 @@ public class DeliveryOfferMapsActivity extends FragmentActivity implements OnMap
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //get values passed from intent
         deliveryPath = getIntent().getParcelableArrayListExtra(DELIVERY_PATH);
         markerLocations = getIntent().getParcelableArrayListExtra(MARKER_LOCATIONS);
         markerNames = getIntent().getStringArrayListExtra(MARKER_NAMES);
 
-
+        //calculate max and min latitudes and longitudes
         for (LatLng point : deliveryPath) {
             // Find out the maximum and minimum latitudes & longitudes
             // Latitude
@@ -65,15 +60,10 @@ public class DeliveryOfferMapsActivity extends FragmentActivity implements OnMap
         }
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * This is where we can add markers or lines, add listeners or move the camera.
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -81,16 +71,19 @@ public class DeliveryOfferMapsActivity extends FragmentActivity implements OnMap
         PolylineOptions polylineOptions = new PolylineOptions();
         mMap = googleMap;
 
+        //setup the LatLngBond for the camera to zoom in and display the path
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         builder.include(new LatLng(maxLat, maxLng));
         builder.include(new LatLng(minLat, minLng));
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
 
+        //draw the polyline
         polylineOptions.addAll(deliveryPath);
         polylineOptions.color(Color.BLUE);
         mMap.addPolyline(polylineOptions);
 
         for(int i = 0; i < markerLocations.size(); i++) {
+            //setup the icon to display on the map
             if (markerNames.get(i).equals("Your Location")) {
                 mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_car)).position(markerLocations.get(i)).title(markerNames.get(i))).showInfoWindow();
             } else if (markerNames.get(i).equals("Restaurant")) {

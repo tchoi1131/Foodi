@@ -31,7 +31,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -41,8 +40,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MaintainDeliveryRequestFragment extends Fragment implements View.OnClickListener{
-    public static final String NEW_DEL_REQ_MODE = "NewDelReqMode";
-    public static final String VIEW_DEL_REQ_MODE = "ViewDelReqMode";
+    public static final String NEW_DEL_REQ_MODE = "NewDelReqMode";      //Create new delivery request mode
+    public static final String VIEW_DEL_REQ_MODE = "ViewDelReqMode";    //View delivery request
 
     /**
      * Request code passed to the PlacePicker intent to identify its result when it returns.
@@ -50,25 +49,30 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
     private static final int RESTAURANT_ADDRESS_PICKER = 1;
     private static final int DELIVERY_ADDRESS_PICKER = 2;
 
+    //constant string to get user id and mode in Arguement
     public static final String ARG_USERID = "userId";
     private static final String ARG_MODE = "mode";
 
-    private String mUserId;
-    private String mMode;
-    private String mRestaurantAddressCity;
-    private String mDeliveryAddressCity;
-    private LatLng mRestaurantAddressLatLng;
-    private LatLng mDeliveryAddressLatLng;
+    private String mUserId;                     //User Id
+    private String mMode;                       //Mode
+    private String mRestaurantAddressCity;      //City of the restaurant address
+    private String mDeliveryAddressCity;        //City of the delivery address
+    private LatLng mRestaurantAddressLatLng;    //Latitude and Longitude of the restaurant address
+    private LatLng mDeliveryAddressLatLng;      //Latitude and Longitude of the delivery address
 
+    //References to UI Objects
     private EditText mOrderNumberETxt;
     private EditText mRestaurantNameETxt;
     private Button mSelectRestaurantAddressBtn;
     private Button mSelectDeliveryAddressBtn;
 
+    //Firebase database reference
     private DatabaseReference mDatabase;
 
+    //FragmentInteractionListener to communicate withe the MainMenuActivity class
     private OnFragmentInteractionListener mListener;
 
+    //default constructor
     public MaintainDeliveryRequestFragment() {
         // Required empty public constructor
     }
@@ -77,19 +81,11 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param userId Parameter 1.
+     * @param userId: user id of current user.
+     * @param mode: view mode ( reserve for future use)
      * @return A new instance of fragment MaintainDeliveryRequestFragment.
      */
     public static MaintainDeliveryRequestFragment newInstance(String userId, String mode) {
-        MaintainDeliveryRequestFragment fragment = new MaintainDeliveryRequestFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_USERID, userId);
-        args.putString(ARG_MODE, mode);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static MaintainDeliveryRequestFragment newInstance(String userId, String mode, DeliveryRequest deliveryRequest) {
         MaintainDeliveryRequestFragment fragment = new MaintainDeliveryRequestFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USERID, userId);
@@ -113,8 +109,13 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maintain_delivery_request, container, false);
 
+        //setup reference to UI Objects and setup listener for buttons
         mOrderNumberETxt = (EditText) view.findViewById(R.id.order_number);
         mRestaurantNameETxt = (EditText) view.findViewById(R.id.restaurant_name);
+        mSelectRestaurantAddressBtn = (Button) view.findViewById(R.id.select_restaurant_address_btn);
+        mSelectRestaurantAddressBtn.setOnClickListener(this);
+        mSelectDeliveryAddressBtn = (Button) view.findViewById(R.id.select_delivery_address_btn);
+        mSelectDeliveryAddressBtn.setOnClickListener(this);
 
         Button actionBtn = (Button) view.findViewById(R.id.action_button);
         actionBtn.setOnClickListener(this);
@@ -122,18 +123,13 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         Button cancelBtn = (Button) view.findViewById(R.id.cancel_btn);
         cancelBtn.setOnClickListener(this);
 
-        mSelectRestaurantAddressBtn = (Button) view.findViewById(R.id.select_restaurant_address_btn);
-        mSelectRestaurantAddressBtn.setOnClickListener(this);
-
-        mSelectDeliveryAddressBtn = (Button) view.findViewById(R.id.select_delivery_address_btn);
-        mSelectDeliveryAddressBtn.setOnClickListener(this);
-
         if(mMode == NEW_DEL_REQ_MODE){
             actionBtn.setText(R.string.create_request);
         }else if (mMode == VIEW_DEL_REQ_MODE){
-            //actionBtn.
+            //reserve for future use
         }
 
+        //setup firebase database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         return view;
@@ -160,6 +156,7 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.action_button && mMode == NEW_DEL_REQ_MODE){
+            //Create delivery request and store in database if action button is clicked and it is in New delivery request mode
             String key = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).push().getKey();
             DeliveryRequest request = null;
             try {
@@ -171,6 +168,7 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            //store delivery request and the corresponding data key in different nodes to maintain the node relationships
             mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(key).setValue(request);
             mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId).child(key).setValue(true);
             mDatabase.child(SysConfig.FBDB_DELIVERY_REQUEST_USER_OFFER).child(key).setValue(true);
@@ -179,9 +177,11 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
             mListener.onFinishCreatingRequest();
         }
         else if(i == R.id.cancel_btn){
+            //return to previous fragment
             getActivity().getFragmentManager().popBackStack();
         }
         else if(i == R.id.select_restaurant_address_btn){
+            //Start an activity for users to select location for restaurant address and name
             try {
                 PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
                 Intent intent = intentBuilder.build(getActivity());
@@ -197,6 +197,7 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
             }
         }
         else if(i == R.id.select_delivery_address_btn){
+            //start an activity for users to select location for delivery address
             try {
                 PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
                 Intent intent = intentBuilder.build(getActivity());
@@ -219,25 +220,25 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
      * This method is called when an Intent has been started by calling
      * {@link #startActivityForResult(android.content.Intent, int)}. The Intent for the
      * {@link com.google.android.gms.location.places.ui.PlacePicker} is started with
-     * {@link #RESTAURANT_ADDRESS_PICKER} request code. When a result with this request code is received
-     * in this method, its data is extracted by converting the Intent data to a {@link Place}
-     * through the
+     * {@link #RESTAURANT_ADDRESS_PICKER} or {@link #DELIVERY_ADDRESS_PICKER}request code.
+     * When a result with this request code is received in this method, its data is extracted by
+     * converting the Intent data to a {@link Place} through the
      * {@link com.google.android.gms.location.places.ui.PlacePicker#getPlace(android.content.Intent,
      * android.content.Context)} call.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode: RESTAURANT_ADDRESS_PICKER or DELIVERY_ADDRESS_PICKER for selection of restaurant address or delivery address
+     * @param resultCode: Activity.RESULT_OK if the place is selected
+     * @param data: contains the selected place data
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // BEGIN_INCLUDE(activity_result)
         if (requestCode == RESTAURANT_ADDRESS_PICKER) {
             // This result is from the PlacePicker dialog.
             if (resultCode == Activity.RESULT_OK) {
-                /* User has picked a place, extract data.
-                   Data is extracted from the returned intent by retrieving a Place object from
-                   the PlacePicker.
+                /**User has picked a place, extract data.
+                 *Setup the text on Restaurant address button,
+                 * the Latitude and Longitude of the restaurant address
+                 * and the city of the address.
                  */
                 final Place place = PlacePicker.getPlace(getActivity(),data);
                 mSelectRestaurantAddressBtn.setText(place.getAddress());
@@ -264,9 +265,10 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         else if (requestCode == DELIVERY_ADDRESS_PICKER) {
             // This result is from the PlacePicker dialog.
             if (resultCode == Activity.RESULT_OK) {
-                /* User has picked a place, extract data.
-                   Data is extracted from the returned intent by retrieving a Place object from
-                   the PlacePicker.
+                /**User has picked a place, extract data.
+                 *Setup the text on Delivery address button,
+                 * the Latitude and Longitude of the delivery address
+                 * and the city of the address.
                  */
                 final Place place = PlacePicker.getPlace(getActivity(),data);
 
@@ -291,7 +293,6 @@ public class MaintainDeliveryRequestFragment extends Fragment implements View.On
         else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-        // END_INCLUDE(activity_result)
     }
 
     /**

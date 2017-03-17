@@ -31,14 +31,17 @@ import java.util.ArrayList;
  * interface.
  */
 public class ViewDeliveryRequestDriverFragment extends Fragment {
-
+    //constant used to get arguments passed to intent
     private static final String ARG_COLUMN_COUNT = "column-count";
     public static final String ARG_USERID = "userId";
 
-    private int mColumnCount = 1;
-    private String mUserId ;
+    private int mColumnCount = 1;       //number of columns
+    private String mUserId ;            //user id
+
+    //Listener to communicate with MainMenuActivity
     private OnListFragmentInteractionListener mListener;
 
+    //UI References
     private MyViewDeliveryRequestDriverRecyclerViewAdapter adapter;
     private ArrayList<String> requestKeys = new ArrayList<>();
     private ArrayList<String> offerKeys = new ArrayList<>();
@@ -47,10 +50,9 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    // [START define_database_reference]
+    //Database references
     private DatabaseReference mDatabase = null;
     private DatabaseReference myRequestRef = null;
-    // [END define_database_reference]
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,8 +78,6 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             mUserId = getArguments().getString(ARG_USERID);
         }
-
-
     }
 
     @Override
@@ -86,6 +86,7 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
         View outerView = inflater.inflate(R.layout.fragment_view_del_req_driver_view, container, false);
         View listView = outerView.findViewById(R.id.delivery_request_list);
 
+        //setup database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Set the adapter
@@ -112,6 +113,7 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
     }
 
     private void loadData(){
+        //read data from database to fill in the UI
         myRequestRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS);
         // Attach a listener to read the data
         myRequestRef.addChildEventListener(new ChildEventListener() {
@@ -208,14 +210,9 @@ public class ViewDeliveryRequestDriverFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
+     * This interface is implemented by MainMenuActivity to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
 

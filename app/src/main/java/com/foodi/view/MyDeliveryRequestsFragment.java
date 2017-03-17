@@ -29,7 +29,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 /**
- * A fragment with a Google +1 button.
+ * A fragment to display delivery request created by current user
  * Activities that contain this fragment must implement the
  * {@link MyDeliveryRequestsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -37,30 +37,31 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class MyDeliveryRequestsFragment extends Fragment implements View.OnClickListener{
-
+    //Constant string to get user Id from intent
     public static final String ARG_USERID = "userId";
 
-
+    //database reference
     private DatabaseReference mDatabase;
     private DatabaseReference userRequestsRef = null;
 
-    private String mUserId;
-    private ArrayList<String> requestKeys = new ArrayList<>();
-    private ArrayList<DeliveryRequest> deliveryRequests = new ArrayList<>();
+    private String mUserId;                                                     //User Id
+    private ArrayList<String> requestKeys = new ArrayList<>();                  //delivery request keys
+    private ArrayList<DeliveryRequest> deliveryRequests = new ArrayList<>();    //delivery request objects
+    private ArrayList<MyDeliveryRequestRowItem> rowItems = new ArrayList<>();   //delivery request row items
 
+    //UI References
     private View view;
     private TableLayout tableLayout;
 
+    //Listener to communicate with MainMenuActivity
     private OnFragmentInteractionListener mListener;
-
-    private ArrayList<MyDeliveryRequestRowItem> rowItems = new ArrayList<>();
 
     public MyDeliveryRequestsFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
+     * A factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param userId Parameter 1.
@@ -87,18 +88,21 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_delivery_requests, container, false);
+
+        //set up UI references and action listeners
         FloatingActionButton mCreateDeliveryRequestFAB = (FloatingActionButton) view.findViewById(R.id.AddFAB);
         mCreateDeliveryRequestFAB.setOnClickListener(this);
-
         tableLayout = (TableLayout) view.findViewById(R.id.request_table);
         mCreateDeliveryRequestFAB.setOnClickListener(this);
 
+        //load Data to the table view
         loadData();
 
         return view;
     }
 
     private void loadData(){
+        // Use firebase database API to read JSON from the database
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userRequestsRef = mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId);
         userRequestsRef.addChildEventListener(new ChildEventListener() {
@@ -172,6 +176,11 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
         });
     }
 
+    /**
+     * Add one row to the table
+     * @param index: the index of the row in the table
+     * @param rowItem: the rowItem object which contains the text in the row
+     */
     private void addTableRow(int index, MyDeliveryRequestRowItem rowItem){
             final String requestKey = requestKeys.get(index);
             final DeliveryRequest deliveryRequest = deliveryRequests.get(index);
@@ -242,6 +251,11 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
             tableLayout.addView(row);
     }
 
+    /**
+     * Update a particular row in the table
+     * @param index: the index of the row to be updated
+     * @param rowItem: the RowItem which contains the updated data
+     */
     private void updateTableRow(int index, MyDeliveryRequestRowItem rowItem){
         View tableRowView = tableLayout.getChildAt(index);
         if(tableRowView instanceof TableRow){
@@ -265,6 +279,7 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
     @Override
     public void onResume(){
         super.onResume();
+        // add table Row to the table since the UI needs to be rebuild
         if(tableLayout.getChildCount() <= 0 && rowItems.size() > 0) {
             for (int i = 0; i < rowItems.size(); i++) {
                 addTableRow(i, rowItems.get(i));
@@ -297,6 +312,7 @@ public class MyDeliveryRequestsFragment extends Fragment implements View.OnClick
         }
     }
 
+    //Row Item
     private class MyDeliveryRequestRowItem{
         String requestDate;
         String restaurantName;

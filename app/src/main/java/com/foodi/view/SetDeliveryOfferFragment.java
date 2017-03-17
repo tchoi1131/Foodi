@@ -7,8 +7,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,8 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-
 import com.foodi.foodi.R;
 import com.foodi.model.DeliveryOffer;
 import com.foodi.model.DeliveryRequest;
@@ -42,7 +38,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,14 +47,11 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
 import com.google.maps.android.PolyUtil;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass to setup the delivery offer.
  * Activities that contain this fragment must implement the
  * {@link SetDeliveryOfferFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -70,14 +62,15 @@ public class SetDeliveryOfferFragment extends Fragment
         implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+    //Constant to get request key and offer key from intent
     private static final String ARG_REQUESTKEY = "requestKey";
     public static final String ARG_OFFERKEY = "offerKey";
+
+    //key to define the location access request
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
-    private String mRequestKey;
-    private String mOfferKey;
-    private DeliveryRequest mDeliveryRequest;
 
+    //UI references
     private TextView mRestaurantAddressTV;
     private TextView mDeliveryAddressTV;
     private EditText mOfferPriceEdtTxt;
@@ -90,14 +83,20 @@ public class SetDeliveryOfferFragment extends Fragment
 
     private static Calendar estimatedDeliveryDate;
 
+    //firebase database reference
     private DatabaseReference mDatabase;
+
+    //listener to communicate with MainMenuActivity
     private OnFragmentInteractionListener mListener;
 
+    private String mRequestKey;                 //delivery request key
+    private String mOfferKey;                   //delivery offer key
+    private DeliveryRequest mDeliveryRequest;   //Delivery request object
+    //google API client
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private String mDurationtxt ;
     private int mDurationVal ;
-
     private ArrayList<LatLng> deliveryPath = new ArrayList<>();
 
     public SetDeliveryOfferFragment() {
@@ -136,6 +135,7 @@ public class SetDeliveryOfferFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_delivery_offer, container, false);
 
+        //setup UI References and Listeners
         mRestaurantAddressTV = (TextView) view.findViewById(R.id.restaurant_address_tv);
         mDeliveryAddressTV = (TextView) view.findViewById(R.id.delivery_address_tv);
         mOfferPriceEdtTxt = (EditText) view.findViewById(R.id.offer_price);
@@ -157,6 +157,7 @@ public class SetDeliveryOfferFragment extends Fragment
         mCancelBtn = (Button) view.findViewById(R.id.cancel_btn);
         mCancelBtn.setOnClickListener(this);
 
+        //read data from database and fill in the UI
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference requestRef = mDatabase.child(SysConfig.FBDB_DELIVERY_REQUESTS).child(mRequestKey);
         requestRef.addValueEventListener(new ValueEventListener() {
@@ -231,11 +232,13 @@ public class SetDeliveryOfferFragment extends Fragment
     }
 
     public void onStart() {
+        //connect to google api client
         mGoogleApiClient.connect();
         super.onStart();
     }
 
     public void onStop() {
+        //disconnect from the API client
         mGoogleApiClient.disconnect();
         super.onStop();
     }
@@ -244,6 +247,7 @@ public class SetDeliveryOfferFragment extends Fragment
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.set_offer_price_btn) {
+            //Create delivery offer
             try {
                 mListener.onSetDeliveryOfferFragmentInteraction(mRequestKey, Double.parseDouble(mOfferPriceEdtTxt.getText().toString()),
                         SysConfig.convertToStoredDateTimeFormat(estimatedDeliveryDate.getTime()));
@@ -251,15 +255,18 @@ public class SetDeliveryOfferFragment extends Fragment
                 e.printStackTrace();
             }
         } else if (i == R.id.est_del_time) {
+            //start TimePickerFragment for user to select estimated delivery time
             DialogFragment newFragment = new TimePickerFragment();
             newFragment.show(getActivity().getFragmentManager(), "timePicker");
         } else if(i == R.id.refresh_btn) {
+            //refresh the estimated delivery time based on current time and the estimated delivery duration
             try {
                 getEstimatedTime();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         } else if(i == R.id.show_map_btn){
+            //start an activity to show the recommended delivery path
             ArrayList<LatLng> markerLocations = new ArrayList<>();
             ArrayList<String> markerNames = new ArrayList<>();
             markerNames.add("Your Location");
@@ -284,7 +291,7 @@ public class SetDeliveryOfferFragment extends Fragment
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        //get estimated delivery time when connected
         try {
             getEstimatedTime();
         } catch (MalformedURLException e) {
@@ -293,8 +300,8 @@ public class SetDeliveryOfferFragment extends Fragment
     }
 
     public void getEstimatedTime() throws MalformedURLException {
+        //request permission if necessary
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Here, thisActivity is the current activity
             if (ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -322,6 +329,7 @@ public class SetDeliveryOfferFragment extends Fragment
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
+            //call Google Maps Direction Webservice to estimate the delivery time and path
             GetEstimatedPath task = new GetEstimatedPath();
             Uri.Builder uriBuilder = new Uri.Builder();
             uriBuilder.scheme("https")
@@ -352,14 +360,9 @@ public class SetDeliveryOfferFragment extends Fragment
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
+     * This interface is implemented by MainMenuActivity to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
         void onSetDeliveryOfferFragmentInteraction(String requestKey, double offerPrice, String estDeliveryTime);
@@ -402,6 +405,7 @@ public class SetDeliveryOfferFragment extends Fragment
     }
 
     public void updateDuration(){
+        //update the Duration value by calculating the different between estimated delivery time and current time
         Calendar now = Calendar.getInstance();
         int durationSecond = (int) ((estimatedDeliveryDate.getTimeInMillis() - now.getTimeInMillis())/ 1000);
         mDurationTV.setText(SysConfig.printDuration(durationSecond));
@@ -418,6 +422,7 @@ public class SetDeliveryOfferFragment extends Fragment
             InputStream inputStream = null;
 
             try {
+                //call the web service
                 url = urls[0];
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -430,6 +435,7 @@ public class SetDeliveryOfferFragment extends Fragment
             }
 
             if (inputStream != null) {
+                //use JSON reader to read the returned JSON file
                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
                 try {
                     reader.beginObject();
@@ -521,6 +527,7 @@ public class SetDeliveryOfferFragment extends Fragment
 
         @Override
         protected void onPostExecute(String result){
+            //display the duration value in the UI
             estimatedDeliveryDate = Calendar.getInstance();
             estimatedDeliveryDate.add(Calendar.SECOND,mDurationVal);
             try {

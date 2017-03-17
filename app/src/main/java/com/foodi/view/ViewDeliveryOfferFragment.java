@@ -30,17 +30,22 @@ import java.util.ArrayList;
  * interface.
  */
 public class ViewDeliveryOfferFragment extends Fragment {
+    //constants for getting the argument passed to intent
     private static final String ARG_COLUMN_COUNT = "column-count";
     public static final String ARG_USERID = "userId";
 
-    private int mColumnCount = 1;
-    private String mUserId ;
+    private int mColumnCount = 1;   //number of columns in the view
+    private String mUserId ;        //user id
+
+    //listener to communicate with MainMenuActivity
     private ViewDeliveryOfferFragment.OnListFragmentInteractionListener mListener;
 
     private MyViewDeliveryOfferRecyclerViewAdapter adapter;
-    ArrayList<String> offerKeys = new ArrayList<>();
-    ArrayList<DeliveryOffer> items = new ArrayList<>();
 
+    ArrayList<String> offerKeys = new ArrayList<>();        //Delivery offer keys
+    ArrayList<DeliveryOffer> items = new ArrayList<>();     //delivery offers
+
+    //firebase database reference
     private DatabaseReference mDatabase;
     private DatabaseReference userRequestsRef = null;
 
@@ -77,9 +82,8 @@ public class ViewDeliveryOfferFragment extends Fragment {
         View outerView = inflater.inflate(R.layout.fragment_view_del_offer_view, container, false);
         View listView = outerView.findViewById(R.id.del_offer_list);
 
-        // [START create_database_reference]
+        //get database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END create_database_reference]
 
         // Set the adapter
         if (listView instanceof RecyclerView) {
@@ -104,6 +108,7 @@ public class ViewDeliveryOfferFragment extends Fragment {
     }
 
     private void loadData(){
+        //Connect to database to get delivery offer information to fill in the UI
         userRequestsRef = mDatabase.child(SysConfig.FBDB_USER_DELIVERY_REQUESTS).child(mUserId);
         // Attach a listener to read the data
         userRequestsRef.addChildEventListener(new ChildEventListener() {
@@ -199,14 +204,9 @@ public class ViewDeliveryOfferFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
+     * This interface must be implemented by MainMenuActivity to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
         void onViewDeliveryOfferFragmentInteraction(String key, DeliveryOffer item);

@@ -1,35 +1,26 @@
 package com.foodi.view;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.CpuUsageInfo;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.foodi.foodi.R;
 import com.foodi.model.DeliveryOffer;
 import com.foodi.model.SysConfig;
 import com.foodi.view.ViewDeliveryOfferFragment.OnListFragmentInteractionListener;
-
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link DeliveryOffer} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter<MyViewDeliveryOfferRecyclerViewAdapter.ViewHolder> {
 
-    private final List<String> mKeys;
-    private final List<DeliveryOffer> mDelivaryOffers;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<String> mKeys;                           //Delivery offer keys
+    private final List<DeliveryOffer> mDelivaryOffers;          //Delivery offer objects
+    private final OnListFragmentInteractionListener mListener;  //listener to communicate with MainMenuActivity
 
     public MyViewDeliveryOfferRecyclerViewAdapter(List<String> keys, List<DeliveryOffer> items, OnListFragmentInteractionListener listener) {
         mKeys = keys;
@@ -77,15 +68,16 @@ public class MyViewDeliveryOfferRecyclerViewAdapter extends RecyclerView.Adapter
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mDriverNameView;
-        public final TextView mOfferPriceView;
-        public final TextView mEstimatedDeliveryTimeView;
-        public final TextView mOfferStatusView;
-        public DeliveryOffer mItem;
-        public String mKey;
+        public final TextView mDriverNameView;              //TextView to store Driver Name
+        public final TextView mOfferPriceView;              //TextView to store offer price
+        public final TextView mEstimatedDeliveryTimeView;   //TextView to store Estimated Delivery Time
+        public final TextView mOfferStatusView;             //TextView to store Offer status
+        public DeliveryOffer mItem;                         //DeliveryOffer Object
+        public String mKey;                                 //key of the offer
 
         public ViewHolder(View view) {
             super(view);
+            //setup UI references
             mView = view;
             mDriverNameView = (TextView) view.findViewById(R.id.driver_name);
             mOfferPriceView = (TextView) view.findViewById(R.id.offer_price);

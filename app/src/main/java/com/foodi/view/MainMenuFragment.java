@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.foodi.foodi.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass to act as a main menu for the App
  * Activities that contain this fragment must implement the
  * {@link MainMenuFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -22,6 +22,7 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
+    //default constructor
     public MainMenuFragment() {
         // Required empty public constructor
     }
@@ -32,7 +33,6 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener{
      *
      * @return A new instance of fragment MainMenuFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MainMenuFragment newInstance() {
         MainMenuFragment fragment = new MainMenuFragment();
         return fragment;
@@ -51,9 +51,9 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
 
+        //setup action listeners
         Button myDelReqBtn = (Button) view.findViewById(R.id.my_delivery_requests_btn);
         myDelReqBtn.setOnClickListener(this);
-
         Button checkDelOfferBtn = (Button) view.findViewById(R.id.check_delivery_offers_btn);
         checkDelOfferBtn.setOnClickListener(this);
         Button browseDelReqBtn = (Button) view.findViewById(R.id.browse_delivery_request_btn);
@@ -86,14 +86,8 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener{
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * This interface is implemented by MainMenuActivity to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
         void onMainMenuFragmentInteraction(int id);

@@ -10,28 +10,47 @@ public class DeliveryRequest {
     public static final String DELIVERY_REQUEST_STATUS_DELIVERY_IN_PROGRESS = "Delivery in progress";   //The status value when delivery in progress
     public static final String DELIVERY_REQUEST_STATUS_DELIVERED = "Delivered";                         //The status when the food is delivered.
 
-    private String requestDateTime;
-    private String orderNumber;
-    private String driverUserId;
-    private String restaurantName;
-    private String restaurantAddressLine;
-    private String restaurantAddressCity;
-    private Double restaurantAddressLat;
-    private Double restaurantAddressLng;
-    private String deliveryAddressLine;
-    private String deliveryAddressCity;
-    private Double deliveryAddressLat;
-    private Double deliveryAddressLng;
-    private int maxReward;
-    private String deliveryRequestStatus;
+    private String requestDateTime;                 //Request creation time
+    private String orderNumber;                     //order number of the food order in the restaurant
+    private String driverUserId;                    //User Id of the driver delivering the food
+    private String restaurantName;                  //Restaurant Name
+    private String restaurantAddressLine;           //Address of the restaurant
+    private String restaurantAddressCity;           //City of the restaurant
+    private Double restaurantAddressLat;            //Latitude of the restaurant
+    private Double restaurantAddressLng;            //Longitude of the restaurant
+    private String deliveryAddressLine;             //Delivery Addresss
+    private String deliveryAddressCity;             //City of the delivery address
+    private Double deliveryAddressLat;              //Latitude of the Delivery addresss
+    private Double deliveryAddressLng;              //Longitude of the delivery address
+    private int maxReward;                          //maximum reward for this request (reserve for future use)
+    private String deliveryRequestStatus;           //Status of the delivery request
 
+    //default constructor
     public DeliveryRequest(){
 
     }
 
+    /**
+     * Constructor to setup all the field at one time.
+     * @param requestDateTime
+     * @param orderNumber
+     * @param driverUserId
+     * @param restaurantName
+     * @param restaurantAddressLine
+     * @param restaurantAddressCity
+     * @param restaurantAddressLat
+     * @param restaurantAddressLng
+     * @param deliveryAddressLine
+     * @param deliveryAddressCity
+     * @param deliveryAddressLat
+     * @param deliveryAddressLng
+     * @param maxReward
+     * @param deliveryRequestStatus
+     */
     public DeliveryRequest(String requestDateTime, String orderNumber, String driverUserId, String restaurantName,
-                           String restaurantAddressLine, String restaurantAddressCity, Double restaurantAddressLat, Double restaurantAddressLng, String deliveryAddressLine,
-                           String deliveryAddressCity, Double deliveryAddressLat, Double deliveryAddressLng, int maxReward, String deliveryRequestStatus) {
+                           String restaurantAddressLine, String restaurantAddressCity, Double restaurantAddressLat,
+                           Double restaurantAddressLng, String deliveryAddressLine, String deliveryAddressCity,
+                           Double deliveryAddressLat, Double deliveryAddressLng, int maxReward, String deliveryRequestStatus) {
         this.requestDateTime = requestDateTime;
         this.orderNumber = orderNumber;
         this.driverUserId = driverUserId;
@@ -48,6 +67,7 @@ public class DeliveryRequest {
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
 
+    //getters and setters
     public String getDriverUserId() {
         return driverUserId;
     }
@@ -59,7 +79,6 @@ public class DeliveryRequest {
     public String getOrderNumber() {
         return orderNumber;
     }
-
 
     public int getMaxReward() {
         return maxReward;
