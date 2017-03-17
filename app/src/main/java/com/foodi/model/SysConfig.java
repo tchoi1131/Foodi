@@ -48,12 +48,32 @@ public class SysConfig {
         return displayTimeFormat.format(dateTime);
     }
 
+    public static String printDuration(int second){
+        int durationSeconds = 0;
+        int durationMins = 0;
+        int durationHours = 0;
+        String outputString = "";
 
-    public SysConfig(){
+        durationSeconds = second % 60;
+        durationMins = second / 60 % 60;
+        durationHours = second / 3600;
 
+        if(durationHours > 0){
+            outputString += String.valueOf(durationHours) + "h ";
+        }
+
+        if(durationMins > 0){
+            outputString += String.valueOf(durationMins) + "m ";
+        }
+
+        if(durationSeconds > 0 || (durationHours <= 0 && durationMins <= 0)) {
+            outputString += String.valueOf(durationSeconds) + "s";
+        }
+
+        return outputString;
     }
 
-    public SysConfig(int nextFoodId, int nextOrderId) {
+    public SysConfig(){
 
     }
 }

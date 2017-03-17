@@ -8,207 +8,94 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TableLayout
-                android:id="@+id/tablelayout"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TableRow
-                    android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:text="@string/order_number"
-                        android:padding="3dip" />
-                    <EditText
-                        android:id="@+id/order_number"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
+                    android:gravity="right"
+                    android:text="@string/order_number"
+                    android:padding="3dip" />
+                <EditText
+                    android:id="@+id/order_number"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:text="@string/restaurant_name"
-                        android:padding="3dip" />
-                    <EditText
-                        android:id="@+id/restaurant_name"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:hint="@string/restaurant_name"/>
-                </TableRow>
+                    android:padding="3dip" />
+            </LinearLayout>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="@string/restaurant_address"
-                        android:padding="3dip" />
-
-                    <EditText
-                        android:id="@+id/restaurant_address_line1"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine1"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/restaurant_address_line2"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine2"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/restaurant_address_line3"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine3"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/restaurant_address_city"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/city"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="@string/delivery_address"
-                        android:padding="3dip" />
-
-                    <EditText
-                        android:id="@+id/delivery_address_line1"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine1"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/delivery_address_line2"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine2"/>
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/delivery_address_line3"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/addressLine3"/>
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:gravity="right"
-                        android:text="" />
-
-                    <EditText
-                        android:id="@+id/delivery_address_city"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:padding="3dip"
-                        android:inputType="textPostalAddress"
-                        android:hint="@string/city"/>
-                </TableRow>
-            </TableLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tablelayout"
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/restaurant_name"
+                    android:padding="3dip" />
+                <EditText
+                    android:id="@+id/restaurant_name"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="3dip"
+                    android:hint="@string/restaurant_name"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/restaurant_address"
+                    android:padding="3dip" />
+                <Button
+                    android:id="@+id/select_restaurant_address_btn"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_address"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/delivery_address"/>
+
+                <Button
+                    android:id="@+id/select_delivery_address_btn"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_address"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:weightSum="2">
                 <Button
                     android:text="@string/cancel"
@@ -216,7 +103,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/cancel_btn"
-                    android:layout_below="@id/tablelayout"
                     android:layout_alignParentRight="true" />
                 <Button
                     android:layout_weight="1"
@@ -226,6 +112,6 @@
                     android:id="@+id/action_button"
                     android:layout_alignParentRight="true" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
 </RelativeLayout>

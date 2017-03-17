@@ -169,8 +169,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), mNameView.getText().toString(), new ArrayList<Integer>(Arrays.asList(0,1,2)));
 
                             mDatabase.child(SysConfig.FBDB_USERS).child(user.getUserId()).setValue(user);
-                            Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
-                            startActivity(intentLoginActivity);
+                            Intent intentMainMenuActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
+                            startActivity(intentMainMenuActivity);
                             finish();
                         }
                         else{
@@ -200,11 +200,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                             Toast.makeText(LoginActivity.this, R.string.login_success,
                                     Toast.LENGTH_SHORT).show();
-                            /*
-                            Intent intentLoginActivity = new Intent(LoginActivity.this, MainMenuActivity.class);
-                            startActivity(intentLoginActivity);
-                            finish();
-                            */
+
                         } else {
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(LoginActivity.this, R.string.login_failed,

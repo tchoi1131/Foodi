@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -30,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.ParseException;
 
 public class MainMenuActivity extends AppCompatActivity
@@ -352,5 +355,30 @@ public class MainMenuActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case SetDeliveryOfferFragment.MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        setDeliveryOfferFragment.getEstimatedTime();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                }
+                return;
+            }
+        }
+    }
+
+    public void updateDurationSetDeliveryOfferFragment(){
+        setDeliveryOfferFragment.updateDuration();
     }
 }

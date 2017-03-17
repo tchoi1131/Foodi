@@ -2,25 +2,26 @@ package com.foodi.model;
 
 /**
  * Created by Tom Wong on 1/31/2017.
+ * This is the class created to store Delivery Request Information.
  */
 
 public class DeliveryRequest {
-    public static final String DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS = "Accepting offers";
-    public static final String DELIVERY_REQUEST_STATUS_DELIVERY_IN_PROGRESS = "Delivery in progress";
-    public static final String DELIVERY_REQUEST_STATUS_DELIVERED = "Delivered";
+    public static final String DELIVERY_REQUEST_STATUS_ACCEPTING_OFFERS = "Accepting offers";           //The status value when it is accepting offers from drivers
+    public static final String DELIVERY_REQUEST_STATUS_DELIVERY_IN_PROGRESS = "Delivery in progress";   //The status value when delivery in progress
+    public static final String DELIVERY_REQUEST_STATUS_DELIVERED = "Delivered";                         //The status when the food is delivered.
 
     private String requestDateTime;
     private String orderNumber;
     private String driverUserId;
     private String restaurantName;
-    private String restaurantAddressLine1;
-    private String restaurantAddressLine2;
-    private String restaurantAddressLine3;
+    private String restaurantAddressLine;
     private String restaurantAddressCity;
-    private String deliveryAddressLine1;
-    private String deliveryAddressLine2;
-    private String deliveryAddressLine3;
+    private Double restaurantAddressLat;
+    private Double restaurantAddressLng;
+    private String deliveryAddressLine;
     private String deliveryAddressCity;
+    private Double deliveryAddressLat;
+    private Double deliveryAddressLng;
     private int maxReward;
     private String deliveryRequestStatus;
 
@@ -29,22 +30,20 @@ public class DeliveryRequest {
     }
 
     public DeliveryRequest(String requestDateTime, String orderNumber, String driverUserId, String restaurantName,
-                           String restaurantAddressLine1, String restaurantAddressLine2,
-                           String restaurantAddressLine3, String restaurantCity, String deliveryAddressLine1,
-                           String deliveryAddressLine2, String deliveryAddressLine3,
-                           String deliveryAddressCity, int maxReward, String deliveryRequestStatus) {
+                           String restaurantAddressLine, String restaurantAddressCity, Double restaurantAddressLat, Double restaurantAddressLng, String deliveryAddressLine,
+                           String deliveryAddressCity, Double deliveryAddressLat, Double deliveryAddressLng, int maxReward, String deliveryRequestStatus) {
         this.requestDateTime = requestDateTime;
         this.orderNumber = orderNumber;
         this.driverUserId = driverUserId;
         this.restaurantName = restaurantName;
-        this.restaurantAddressLine1 = restaurantAddressLine1;
-        this.restaurantAddressLine2 = restaurantAddressLine2;
-        this.restaurantAddressLine3 = restaurantAddressLine3;
-        this.restaurantAddressCity = restaurantCity;
-        this.deliveryAddressLine1 = deliveryAddressLine1;
-        this.deliveryAddressLine2 = deliveryAddressLine2;
-        this.deliveryAddressLine3 = deliveryAddressLine3;
+        this.restaurantAddressLine = restaurantAddressLine;
+        this.restaurantAddressCity = restaurantAddressCity;
+        this.restaurantAddressLat = restaurantAddressLat;
+        this.restaurantAddressLng = restaurantAddressLng;
+        this.deliveryAddressLine = deliveryAddressLine;
         this.deliveryAddressCity = deliveryAddressCity;
+        this.deliveryAddressLat = deliveryAddressLat;
+        this.deliveryAddressLng = deliveryAddressLng;
         this.maxReward = maxReward;
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
@@ -78,68 +77,20 @@ public class DeliveryRequest {
         this.deliveryRequestStatus = deliveryRequestStatus;
     }
 
-    public String getRestaurantAddress() {
-
-        return restaurantAddressLine1 + "\n" +
-                restaurantAddressLine2 + "\n" +
-                restaurantAddressLine3 + "\n" +
-                restaurantAddressCity;
+    public String getRestaurantAddressLine() {
+        return restaurantAddressLine;
     }
 
-    public String getRestaurantAddressLine1() {
-        return restaurantAddressLine1;
+    public void setRestaurantAddressLine(String restaurantAddressLine) {
+        this.restaurantAddressLine = restaurantAddressLine ;
     }
 
-    public void setRestaurantAddressLine1(String restaurantAddressLine1) {
-        this.restaurantAddressLine1 = restaurantAddressLine1;
+    public String getDeliveryAddressLine() {
+        return deliveryAddressLine;
     }
 
-    public String getRestaurantAddressLine2() {
-        return restaurantAddressLine2;
-    }
-
-    public void setRestaurantAddressLine2(String restaurantAddressLine2) {
-        this.restaurantAddressLine2 = restaurantAddressLine2;
-    }
-
-    public String getRestaurantAddressLine3() {
-        return restaurantAddressLine3;
-    }
-
-    public void setRestaurantAddressLine3(String restaurantAddressLine3) {
-        this.restaurantAddressLine3 = restaurantAddressLine3;
-    }
-
-
-    public String getDeliveryAddress() {
-        return deliveryAddressLine1 + "\n" +
-                deliveryAddressLine2 + "\n" +
-                deliveryAddressLine3 + "\n" +
-                deliveryAddressCity;
-    }
-
-    public String getDeliveryAddressLine1() {
-        return deliveryAddressLine1;
-    }
-
-    public void setDeliveryAddressLine1(String deliveryAddressLine1) {
-        this.deliveryAddressLine1 = deliveryAddressLine1;
-    }
-
-    public String getDeliveryAddressLine2() {
-        return deliveryAddressLine2;
-    }
-
-    public void setDeliveryAddressLine2(String deliveryAddressLine2) {
-        this.deliveryAddressLine2 = deliveryAddressLine2;
-    }
-
-    public String getDeliveryAddressLine3() {
-        return deliveryAddressLine3;
-    }
-
-    public void setDeliveryAddressLine3(String deliveryAddressLine3) {
-        this.deliveryAddressLine3 = deliveryAddressLine3;
+    public void setDeliveryAddressLine(String deliveryAddressLine) {
+        this.deliveryAddressLine = deliveryAddressLine ;
     }
 
     public String getRestaurantName() {
@@ -150,12 +101,20 @@ public class DeliveryRequest {
         this.restaurantName = restaurantName;
     }
 
+    public String getRequestDateTime() {
+        return requestDateTime;
+    }
+
+    public void setRequestDateTime(String requestTime) {
+        this.requestDateTime = requestTime;
+    }
+
     public String getRestaurantAddressCity() {
         return restaurantAddressCity;
     }
 
-    public void setRestaurantAddressCity(String restaurantCity) {
-        this.restaurantAddressCity = restaurantCity;
+    public void setRestaurantAddressCity(String restaurantAddressCity) {
+        this.restaurantAddressCity = restaurantAddressCity;
     }
 
     public String getDeliveryAddressCity() {
@@ -166,11 +125,35 @@ public class DeliveryRequest {
         this.deliveryAddressCity = deliveryAddressCity;
     }
 
-    public String getRequestDateTime() {
-        return requestDateTime;
+    public Double getRestaurantAddressLat() {
+        return restaurantAddressLat;
     }
 
-    public void setRequestDateTime(String requestTime) {
-        this.requestDateTime = requestTime;
+    public Double getRestaurantAddressLng(){
+        return restaurantAddressLng;
+    }
+
+    public void setRestaurantAddressLat(Double restaurantAddressLat) {
+        this.restaurantAddressLat = restaurantAddressLat;
+    }
+
+    public void setRestaurantAddressLng(Double restaurantAddressLng) {
+        this.restaurantAddressLng = restaurantAddressLng;
+    }
+
+    public Double getDeliveryAddressLat() {
+        return deliveryAddressLat;
+    }
+
+    public Double getDeliveryAddressLng() {
+        return deliveryAddressLng;
+    }
+
+    public void setDeliveryAddressLat(Double deliveryAddressLat) {
+        this.deliveryAddressLat = deliveryAddressLat;
+    }
+
+    public void setDeliveryAddressLng(Double deliveryAddressLng) {
+        this.deliveryAddressLng = deliveryAddressLng;
     }
 }

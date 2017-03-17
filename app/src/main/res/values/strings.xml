@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Foodi</string>
 
+    <string name="api_key">AIzaSyAIBMbRT-B-_KE6l-a8F6jhqZycCYBH0jo</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -55,10 +57,7 @@
     <string name="acceptOffer">Accept %1$s\'s Offer?</string>
     <string name="acceptedOffer">Accepted %1$s\'s Offer.</string>
 
-    <string name="city">City</string>
-    <string name="addressLine1">Address Line 1</string>
-    <string name="addressLine2">Address Line 2</string>
-    <string name="addressLine3">Address Line 3</string>
+    <string name="select_address">Select Address</string>
 
     <string name="cancel">Cancel</string>
 
@@ -89,5 +88,8 @@
     </string>
     <string name="customer">Customer</string>
     <string name="driver">Driver</string>
+    <string name="restaurant_address_line">Restaurant Address Line</string>
+    <string name="delivery_address_line">Delivery Address Line</string>
+    <string name="title_activity_delivery_offer_maps">DeliveryPathMap</string>
 
 </resources>
