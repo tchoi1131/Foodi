@@ -26,6 +26,21 @@ Customer
 
 
 Driver
-1. Browse Delivery Requests and create your offers with  for customer to select.
+1. Browse Delivery Requests and create offers for customer to select.
+<div align="left">
+<img width="30%" src="/Screenshots/Screenshot_20170317-142819.png" title="View Delivery Requests"/>
+<img width="30%" src="/Screenshots/Screenshot_20170317-142834.png" title="Input Delivery Offer Info"/>
+</div>
 
-2. Check recommended delivery route and estimated delivery arrival time.
+
+2. Check recommended delivery route.
+<div align="left">
+<img width="30%" src="/Screenshots/Screenshot_20170317-142849.png" title="View Recommended Delivery Route"/>
+<img width="30%" src="/Screenshots/Screenshot_20170317-142902.png" title="View Recommended Delivery Route"/>
+</div>
+
+3. Confirm Delivery Offer.
+<div align="left">
+<img width="30%" src="/Screenshots/Screenshot_20170317-142947.png" title="Confirm Delivery Offer"/>
+<img width="30%" src="/Screenshots/Screenshot_20170317-142952.png" title="Confirm Delivery Offer"/>
+</div>
