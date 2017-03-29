@@ -1,5 +1,7 @@
-# Foodi
+# Foodi<img width="5%" src="/app/src/main/res/mipmap-hdpi/ic_launcher.png" title="Foodi"/>
+
 Foodi is an Android App, aiming to provide a platform for food delivery, which empowering customer and drivers to discover and communicate with each other.
+
 
 What can you do on Foodi?
 
@@ -23,6 +25,7 @@ Customer
 <img width="30%" src="/Screenshots/Screenshot_20170317-143005.png" title="Update Delivery Request Status"/>
 <img width="30%" src="/Screenshots/Screenshot_20170317-143009.png" title="Check Updated Delivery Request Status"/>
 </div>
+
 
 
 Driver
