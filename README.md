@@ -1,6 +1,6 @@
 # Foodi<img width="5%" src="/app/src/main/res/mipmap-hdpi/ic_launcher.png" title="Foodi"/>
 
-Foodi is an Android App, aiming to provide a platform for food delivery, which empowering customer and drivers to discover and communicate with each other.
+Foodi is an Android App, aiming to provide a platform to connect customers and drivers for food delivery. It empowers customer and drivers to discover and communicate with each other, and ultimately getting to agreements on delivery charge and time.
 
 
 What can you do on Foodi?
