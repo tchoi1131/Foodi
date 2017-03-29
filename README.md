@@ -3,7 +3,7 @@
 Foodi is an Android App, aiming to provide a platform to connect customers and drivers for food delivery. It empowers customer and drivers to discover and communicate with each other, and ultimately getting to agreements on delivery charge and time.
 
 
-## What can you do on Foodi?
+## What can you do in Foodi?
 
 ### Customer
 1. Post Delivery Request.
@@ -12,7 +12,6 @@ Foodi is an Android App, aiming to provide a platform to connect customers and d
 <img width="30%" src="/Screenshots/Screenshot_20170317-142648.png" title="Create Delivery Request"/>
 <img width="30%" src="/Screenshots/Screenshot_20170317-142808.png" title="My Delivery Request"/>
 </div>
-
 
 2. Browse and choose Delivery Offer.
 <div align="left">
@@ -32,7 +31,6 @@ Foodi is an Android App, aiming to provide a platform to connect customers and d
 <img width="30%" src="/Screenshots/Screenshot_20170317-142819.png" title="View Delivery Requests"/>
 <img width="30%" src="/Screenshots/Screenshot_20170317-142834.png" title="Input Delivery Offer Info"/>
 </div>
-
 2. Check recommended delivery route.
 <div align="left">
 <img width="30%" src="/Screenshots/Screenshot_20170317-142849.png" title="View Recommended Delivery Route"/>
